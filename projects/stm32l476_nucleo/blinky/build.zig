@@ -173,7 +173,7 @@ pub fn build(b: *std.Build) void {
         objsize.step.dependOn(&elf.step);
         b.default_step.dependOn(&objsize.step);
     } else {
-        std.log.warn("'size' program not found", .{});
+        std.log.warn("'llvm-size' or 'arm-none-eabi-size' program not found", .{});
     }
 
     // Copy the bin out of the elf

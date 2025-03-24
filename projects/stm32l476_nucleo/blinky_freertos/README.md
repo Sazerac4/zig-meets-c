@@ -1,6 +1,11 @@
+## Description
+
+This has the same goal as the **blinky** example, but it is an experiment to implement it using a **FreeRTOS task**.  
+The FreeRTOS source was included in the compilation script. Using **libc** is now mandatory, and we rely on **newlib** provided by GCC (`elf.linkSystemLibrary("c_nano");`).  
+Our Zig code begins at `zigEntrypoint`, and this function is called from C code using linker capabilities. The function is tagged with `callconv(.C)` to ensure compatibility with the C ABI.
+
 ## Use Zig after generating the project with STM32CubeMX
 
-Details about project structure are explained in this [chapter](#Structure).
 To use Zig in any microcontrollers `STM32CubeMX` generated project, follow these modification steps:
 
 1. **Create a `build.zig` file** and configure it to compile the C source files (Use this one as a model).
