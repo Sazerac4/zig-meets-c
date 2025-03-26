@@ -162,7 +162,7 @@ pub fn build(b: *std.Build) void {
 
     //Need libc
     os_mod.addSystemIncludePath(.{ .cwd_relative = b.fmt("{s}/include", .{gcc_arm_sysroot_path}) });
-    os_mod.linkSystemLibrary("c_nano", .{ .needed = true, .weak = false, .preferred_link_mode = .static });
+    //os_mod.linkSystemLibrary("c_nano", .{ .needed = true, .weak = false, .preferred_link_mode = .static });
     os_mod.addCMacro("USE_HAL_DRIVER", "");
     os_mod.addCMacro("STM32L476xx", "");
 
