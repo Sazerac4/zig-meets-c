@@ -20,9 +20,7 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -68,17 +66,6 @@ int main(void)
 {
 
     /* USER CODE BEGIN 1 */
-    char test_libc[53];
-    volatile float a  = sinf(55);
-    volatile double b = sin(55);
-
-    // Formatting test
-    snprintf(test_libc, sizeof(test_libc),  "%f,%f", a, b);
-    //
-    const unsigned int malloc_size = 50;
-    char* malloc_test              = (char*)malloc(malloc_size);
-    snprintf(malloc_test, malloc_size, "ptr: %u, size:%d", malloc_size, (uintptr_t)malloc_test);
-    printf("%s", malloc_test);
 
     /* USER CODE END 1 */
 

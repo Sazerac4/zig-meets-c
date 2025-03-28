@@ -162,7 +162,7 @@ pub fn build(b: *std.Build) void {
 
     //Need libc
     os_mod.addSystemIncludePath(.{ .cwd_relative = b.fmt("{s}/include", .{gcc_arm_sysroot_path}) });
-    os_mod.linkSystemLibrary("c_nano", .{ .needed = true, .weak = false, .preferred_link_mode = .static });
+    //os_mod.linkSystemLibrary("c_nano", .{ .needed = true, .weak = false, .preferred_link_mode = .static });
     os_mod.addCMacro("USE_HAL_DRIVER", "");
     os_mod.addCMacro("STM32L476xx", "");
 
@@ -203,6 +203,21 @@ pub fn build(b: *std.Build) void {
     elf.forceUndefinedSymbol("uxTopUsedPriority");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Show section sizes inside binary files
+    const size_prog: ?[]const u8 = b.findProgram(&.{"arm-none-eabi-size"}, &.{}) catch
+        b.findProgram(&.{"llvm-size"}, &.{}) catch null;
+    if (size_prog) |name| {
+        const objsize = b.addSystemCommand(&[_][]const u8{
+            name,
+            "zig-out/bin/" ++ executable_name ++ ".elf",
+        });
+        objsize.step.dependOn(&elf.step);
+        b.default_step.dependOn(&objsize.step);
+    } else {
+        std.log.warn("'llvm-size' or 'arm-none-eabi-size' program not found", .{});
+    }
+
     // Copy the bin out of the elf
     const bin = b.addObjCopy(elf.getEmittedBin(), .{
         .format = .bin,

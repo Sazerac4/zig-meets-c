@@ -31,7 +31,7 @@
             }
         },
         {
-            "label": "$(gear) Build",
+            "label": "$(gear) Debug build",
             "type": "shell",
             "linux": {
                 "command": "zig build",
@@ -46,7 +46,33 @@
                 "cwd": "${workspaceRoot}",
                 "statusbar": {
                     "color": "#48c548",
-                    "label": "$(gear) Build"
+                    "label": "$(gear) Debug"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "$(gear) Safe build",
+            "type": "shell",
+            "linux": {
+                "command": "zig build --release=safe",
+            },
+            "osx": {
+                "command": "zig build --release=safe",
+            },
+            "windows": {
+                "command": "zig build --release=safe",
+            },
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "statusbar": {
+                    "color": "#48c548",
+                    "label": "$(gear) Safe"
                 }
             },
             "isBackground": true,

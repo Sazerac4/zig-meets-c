@@ -1,6 +1,10 @@
+## Description
+
+This is a **blinky** program, but we do not use **newlib** from GCC. Instead, we built **picolibc** from source and provided it (`elf.linkSystemLibrary("c_pico");`).
+Our Zig code begins at `zigEntrypoint`, and this function is called from C code using linker capabilities. The function is tagged with `callconv(.C)` to ensure compatibility with the C ABI.
+
 ## Use Zig after generating the project with STM32CubeMX
 
-Details about project structure are explained in this [chapter](#Structure).
 To use Zig in any microcontrollers `STM32CubeMX` generated project, with picolibc, follow these modification steps:
 
 1. **Create a `build.zig` file** and configure it to compile the C source files (Use this one as a model).
@@ -18,7 +22,7 @@ To use Zig in any microcontrollers `STM32CubeMX` generated project, with picolib
     ```
 
 3. **Create the linker script** (`stm32l476rgtx_flash.ld`). This is a picolibc template that needs to be adjusted for your specific microcontrollers (e.g., RAM size, flash size, and additional sections).
-4. **Copy the `libc` folder** or generate the `libc` files. Refer to the [Picolibc Integration](#Picolibc-Integration) chapter for detailed instructions.
+4. **Copy the `libc` folder** or generate the `libc` files. Refer to the [Picolibc Integration](#Picolibc-Integration) chapter for detailed instructions. Warning: You need to rebuild the libc if the target parameters are different (e.g., float support, Cortex-M).
 5. **Create a `main.zig` file** with a custom entry point, such as `zigEntrypoint`.
 6. **Call the `zigEntrypoint` function** from the `main` function located in the `Core/Src/main.c` file.
 
