@@ -9,6 +9,6 @@
 - [ ] Add CI to compile every example.
 - [ ] Add more examples code ()
 - [ ] Add more target (nrf52, raspberry pi pico)
-- [ ] Custom Panic function to implement for runtime error (using UART interface)
+- [X] Custom Panic function to implement for runtime error (using UART interface)
 - [ ] Add Testing unit using Zig
 - [ ] Update `.clang-format` to correspond to Zig style guide.

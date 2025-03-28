@@ -11,9 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Documentation for Windows and Vs Code has been started.
 - A new example to demonstrate how to build and integrate the libc (picolibc).
-- Added LICENSE file
+- LICENSE file (MIT)
 - `c_optimization` to override `-O0` in debug mode in the `build.zig` script.  
-- Added `-Wextra` to C flags in the `build.zig` script.
+- `-Wextra` to C flags in the `build.zig` script.
+- `myPanic` function for each example
+- `arm-none-eabi-size` or `llvm-size` command to be executed after build.
+- Safe build task with Vscode
+- Description paragraph for each example
 
 ### Changed
 
@@ -24,10 +28,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The organization of project examples has been changed. The project is now open to other platforms/targets.
 - `addCMacro` is used for defining macros instead of using C flags.
 - `callconv(.C)` to `callconv(.c)`
+- `zigEntrypoint` with `callconv(.c)` attribute
 
 ### Removed
 
 - CMake is no longer used. The objective of this repository is to stay focused on Zig project integration.
+- libc test Code in examples.
 
 ## [0.13.0] - 2024-06-11
 

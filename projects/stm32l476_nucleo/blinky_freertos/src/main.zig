@@ -17,7 +17,7 @@ export fn zig_task(params: ?*anyopaque) callconv(.c) void {
 
     while (true) {
         c.HAL_GPIO_WritePin(c.LD2_GPIO_Port, c.LD2_Pin, c.GPIO_PIN_RESET);
-        os.vTaskDelay(200);
+        os.vTaskDelay(200); // It will delay 2s. Macro "pdMS_TO_TICKS" convert tick to ms don't work as expected.
         c.HAL_GPIO_WritePin(c.LD2_GPIO_Port, c.LD2_Pin, c.GPIO_PIN_SET);
         os.vTaskDelay(200);
     }
