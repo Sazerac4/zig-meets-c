@@ -30,6 +30,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
+        .sanitize_c = if (optimization == .Debug) false else true,
     });
 
     const elf = b.addExecutable(.{
@@ -86,6 +87,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
+        .sanitize_c = if (optimization == .Debug) false else true,
     });
 
     const hal_includes = [_][]const u8{ "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };
@@ -134,6 +136,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
+        .sanitize_c = if (optimization == .Debug) false else true,
     });
 
     const os_includes = [_][]const u8{ "Middlewares/Third_Party/FreeRTOS/Source/include", "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2", "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F", "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };

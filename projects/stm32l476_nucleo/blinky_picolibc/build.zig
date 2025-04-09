@@ -30,6 +30,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
+        .sanitize_c = if (optimization == .Debug) false else true,
     });
 
     const elf = b.addExecutable(.{
