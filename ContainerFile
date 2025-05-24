@@ -16,10 +16,10 @@ RUN cd /tmp && wget https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/r
     && ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-*  ~/.local/bin
 
 #Install Zig
-ARG ZIG_VERSION="0.14.0"
-RUN cd /tmp && wget https://ziglang.org/builds/zig-linux-x86_64-${ZIG_VERSION}.tar.xz && \
-    tar -xf /tmp/zig-linux-x86_64-*.tar.xz -C /opt/tools/ && \
-    ln -s /opt/tools/zig-linux-x86_64-*/zig ~/.local/bin
+ARG ZIG_VERSION="0.14.1"
+RUN cd /tmp && wget https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz && \
+    tar -xf /tmp/zig-x86_64-linux-*.tar.xz -C /opt/tools/ && \
+    ln -s /opt/tools/zig-x86_64-linux-*/zig ~/.local/bin
 
 #Clean image
 RUN apt clean && rm -rf -- /var/lib/apt/lists/* && rm -rf -- /tmp/*

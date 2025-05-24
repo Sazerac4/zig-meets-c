@@ -60,7 +60,7 @@ List of tools that is used around examples
 
 | Name              | Version   | Description                                                             |
 | :---------------- | --------- | :---------------------------------------------------------------------- |
-| Zig               | `0.14.0`  | For compiling C and Zig code                                            |
+| Zig               | `0.14.1`  | For compiling C and Zig code                                            |
 | ZLS               | `0.14.0`  | Language Server Protocol for Zig                                        |
 | Arm GNU Toolchain | `14.2.1`  | Tools for C development (gdb, binutils) and libc                        |
 | LLVM+Clang        | `19.1.7`  | Tools for C development (clang-format, clang-tidy, clangd)              |
@@ -89,10 +89,10 @@ cd /tmp && wget https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/relea
     && ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-*  ~/.local/bin
 
 #Install Zig
-ZIG_VERSION="0.14.0"
-cd /tmp && wget https://ziglang.org/builds/zig-linux-x86_64-${ZIG_VERSION}.tar.xz && \
-    tar -xf /tmp/zig-linux-x86_64-*.tar.xz -C /opt/tools/ && \
-    ln -s /opt/tools/zig-linux-x86_64-*/zig ~/.local/bin
+ZIG_VERSION="0.14.1"
+cd /tmp && wget https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz && \
+    tar -xf /tmp/zig-x86_64-linux-*.tar.xz -C /opt/tools/ && \
+    ln -s /opt/tools/zig-x86_64-linux-*/zig ~/.local/bin
 
 #Install ZLS
 ZLS_VERSION="0.14.0"
@@ -116,9 +116,9 @@ Two technologies exist, both CLI APIs are mostly compatible: Docker and Podman. 
 
 ```bash
 #Create the image
-podman build -f ContainerFile --tag=zig_and_c:0.14.0 .
+podman build -f ContainerFile --tag=zig_and_c:0.14.1 .
 #Run a container
-podman run --rm -it --privileged -v ./projects:/apps --name=zig_and_c zig_and_c:0.14.0
+podman run --rm -it --privileged -v ./projects:/apps --name=zig_and_c zig_and_c:0.14.1
 # Navigate to a project (example blinky)
 cd stm32l476_nucleo/blinky
 # Build the firmware
