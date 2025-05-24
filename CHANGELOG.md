@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2025-05-24
+
 ### Added
 
 - Documentation for Windows and Vs Code has been started.
@@ -18,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `arm-none-eabi-size` or `llvm-size` command to be executed after build.
 - Safe build task with Vscode
 - Description paragraph for each example
-- `.sanitize_c = if (optimization == .Debug) false else true,` to get small binary output in debug mode 
+- Disable the sanitizer to reduce binary size in certain release configurations. `.sanitize_c = if (optimization == .Debug or optimization == .ReleaseFast) false else true,`.
 
 ### Changed
 
@@ -30,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `addCMacro` is used for defining macros instead of using C flags.
 - `callconv(.C)` to `callconv(.c)`
 - `zigEntrypoint` with `callconv(.c)` attribute
+- Use `b.getInstallStep()` instead of `b.default_step`
 
 ### Removed
 
