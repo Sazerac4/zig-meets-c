@@ -2,7 +2,7 @@ const builtin = @import("builtin");
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
-    const executable_name = "blinky_freertos";
+    const exe_name = "blinky_freertos";
 
     // Target
     const query: std.Target.Query = .{
@@ -19,8 +19,8 @@ pub fn build(b: *std.Build) void {
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const optimization = b.standardOptimizeOption(.{});
 
-    // When you perform a Debug Release, the optimization level is set to -O0, which significantly increases the binary output size. This makes the Debug Release unsuitable
-    // for devices with limited flash memory. To address this, we will override the optimization level with the -Og flag while leaving the other three optimization modes unchanged.
+    // In Debug Release, the default optimization level is set to -O0, which significantly increases the binary size.
+    // We override the optimization level with -Og while keeping the other three optimization modes unchanged.
     const c_optimization = if (optimization == .Debug) "-Og" else if (optimization == .ReleaseSmall) "-Os" else "-O2";
 
     const exe_mod = b.createModule(.{
@@ -34,7 +34,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const elf = b.addExecutable(.{
-        .name = executable_name ++ ".elf",
+        .name = exe_name ++ ".elf",
         .linkage = .static,
         .root_module = exe_mod,
     });
@@ -87,7 +87,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
-        .sanitize_c = if (optimization == .Debug) false else true,
+        .sanitize_c = if (optimization == .Debug or optimization == .ReleaseFast) false else true,
     });
 
     const hal_includes = [_][]const u8{ "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };
@@ -165,7 +165,6 @@ pub fn build(b: *std.Build) void {
 
     //Need libc
     os_mod.addSystemIncludePath(.{ .cwd_relative = b.fmt("{s}/include", .{gcc_arm_sysroot_path}) });
-    //os_mod.linkSystemLibrary("c_nano", .{ .needed = true, .weak = false, .preferred_link_mode = .static });
     os_mod.addCMacro("USE_HAL_DRIVER", "");
     os_mod.addCMacro("STM32L476xx", "");
 
@@ -197,7 +196,7 @@ pub fn build(b: *std.Build) void {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     elf.setLinkerScript(b.path("stm32l476rgtx_flash.ld"));
-    elf.want_lto = false; // -flto
+    elf.want_lto = false; // -flto. undefined symbol: vTaskSwitchContext when true.
     elf.link_data_sections = true; // -fdata-sections
     elf.link_function_sections = true; // -ffunction-sections
     elf.link_gc_sections = true; // -Wl,--gc-sections
@@ -213,12 +212,12 @@ pub fn build(b: *std.Build) void {
     if (size_prog) |name| {
         const objsize = b.addSystemCommand(&[_][]const u8{
             name,
-            "zig-out/bin/" ++ executable_name ++ ".elf",
+            "zig-out/bin/" ++ exe_name ++ ".elf",
         });
         objsize.step.dependOn(&elf.step);
-        b.default_step.dependOn(&objsize.step);
+        b.getInstallStep().dependOn(&objsize.step);
     } else {
-        std.log.warn("'llvm-size' or 'arm-none-eabi-size' program not found", .{});
+        std.log.warn("Could not find arm-none-eabi-size or llvm-size, skipping size step", .{});
     }
 
     // Copy the bin out of the elf
@@ -226,16 +225,16 @@ pub fn build(b: *std.Build) void {
         .format = .bin,
     });
     bin.step.dependOn(&elf.step);
-    const copy_bin = b.addInstallBinFile(bin.getOutput(), executable_name ++ ".bin");
-    b.default_step.dependOn(&copy_bin.step);
+    const copy_bin = b.addInstallBinFile(bin.getOutput(), exe_name ++ ".bin");
+    b.getInstallStep().dependOn(&copy_bin.step);
 
     // Copy the bin out of the elf
     const hex = b.addObjCopy(elf.getEmittedBin(), .{
         .format = .hex,
     });
     hex.step.dependOn(&elf.step);
-    const copy_hex = b.addInstallBinFile(hex.getOutput(), executable_name ++ ".hex");
-    b.default_step.dependOn(&copy_hex.step);
+    const copy_hex = b.addInstallBinFile(hex.getOutput(), exe_name ++ ".hex");
+    b.getInstallStep().dependOn(&copy_hex.step);
 
     //Add st-flash command (https://github.com/stlink-org/stlink)
     const flash_cmd = b.addSystemCommand(&[_][]const u8{
@@ -244,7 +243,7 @@ pub fn build(b: *std.Build) void {
         "--freq=4000k",
         "--format=ihex",
         "write",
-        "zig-out/bin/" ++ executable_name ++ ".hex",
+        "zig-out/bin/" ++ exe_name ++ ".hex",
     });
 
     flash_cmd.step.dependOn(&bin.step);
@@ -257,6 +256,6 @@ pub fn build(b: *std.Build) void {
         clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.pathFromRoot(".zig-cache") }).step);
     }
 
-    b.default_step.dependOn(&elf.step);
+    b.getInstallStep().dependOn(&elf.step);
     b.installArtifact(elf);
 }
