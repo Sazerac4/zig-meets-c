@@ -5,262 +5,96 @@
 
 #pragma once
 
-/* Use atomics for fgetc/ungetc for re-entrancy */
-#define ATOMIC_UNGETC
-
-/* Always optimize strcmp for performance */
-#define FAST_STRCMP
-
-/* Obsoleted. Use regular syscalls */
-#undef MISSING_SYSCALL_NAMES
-
-/* use global errno variable */
-#undef NEWLIB_GLOBAL_ERRNO
-
-/* use thread local storage */
-#define NEWLIB_TLS
-
-/* use thread local storage */
-#define PICOLIBC_TLS
-
-/* Use open/close/read/write in tinystdio */
-#define POSIX_IO
-
-/* Optimize for space over speed */
-#define PREFER_SIZE_OVER_SPEED
-
-/* Obsoleted. Reentrant syscalls provided for us */
-#undef REENTRANT_SYSCALLS_PROVIDED
-
-/* Use tiny stdio from gcc avr */
-#define TINY_STDIO
-
-#define _ASSERT_VERBOSE
-
-#undef _ATEXIT_DYNAMIC_ALLOC
-
-#define _ELIX_LEVEL 4
-
-/* The default printf functions is the double variant */
-#define _FORMAT_DEFAULT_DOUBLE
-
-/* The default printf functions is the float variant */
-#undef _FORMAT_DEFAULT_FLOAT
-
-/* The default printf functions is the integer variant */
-#undef _FORMAT_DEFAULT_INTEGER
-
-/* The default printf functions is the long-long variant */
-#undef _FORMAT_DEFAULT_LONG_LONG
-
-/* The default printf functions is the minimal variant */
-#undef _FORMAT_DEFAULT_MINIMAL
-
-#undef _FSEEK_OPTIMIZATION
-
-#undef _FVWRITE_IN_STREAMIO
-
-#define _HAVE_ALIAS_ATTRIBUTE
-
-/* The compiler REALLY has the attribute __alloc_size__ */
-#define _HAVE_ALLOC_SIZE
-
-/* ARM Semihost APIs supported */
-#define _HAVE_ARM_SEMIHOST
-
-/* The compiler supports the always_inline function attribute */
-#define _HAVE_ATTRIBUTE_ALWAYS_INLINE
-
-/* The compiler supports the gnu_inline function attribute */
-#define _HAVE_ATTRIBUTE_GNU_INLINE
-
-/* Use bitfields in packed structs */
-#define _HAVE_BITFIELDS_IN_PACKED_STRUCTS
-
-/* Compiler has __builtin_add_overflow */
-#define _HAVE_BUILTIN_ADD_OVERFLOW
-
-/* The compiler supports __builtin_alloca */
-#define _HAVE_BUILTIN_ALLOCA
-
-/* Compiler has __builtin_complex */
-#define _HAVE_BUILTIN_COMPLEX
-
-/* The compiler supports __builtin_copysign */
-#define _HAVE_BUILTIN_COPYSIGN
-
-/* The compiler supports __builtin_copysignl */
-#define _HAVE_BUILTIN_COPYSIGNL
-
-/* The compiler supports __builtin_ctz */
-#define _HAVE_BUILTIN_CTZ
-
-/* The compiler supports __builtin_ctzl */
-#define _HAVE_BUILTIN_CTZL
-
-/* The compiler supports __builtin_ctzll */
-#define _HAVE_BUILTIN_CTZLL
-
-/* Compiler has __builtin_expect */
-#define _HAVE_BUILTIN_EXPECT
-
-/* The compiler supports __builtin_ffs */
-#define _HAVE_BUILTIN_FFS
-
-/* The compiler supports __builtin_ffsl */
-#define _HAVE_BUILTIN_FFSL
-
-/* The compiler supports __builtin_ffsll */
-#define _HAVE_BUILTIN_FFSLL
-
-/* The compiler supports __builtin_finitel */
-#undef _HAVE_BUILTIN_FINITEL
-
-/* The compiler supports __builtin_isfinite */
-#define _HAVE_BUILTIN_ISFINITE
-
-/* The compiler supports __builtin_isinf */
-#define _HAVE_BUILTIN_ISINF
-
-/* The compiler supports __builtin_isinfl */
-#undef _HAVE_BUILTIN_ISINFL
-
-/* The compiler supports __builtin_isnan */
-#define _HAVE_BUILTIN_ISNAN
-
-/* The compiler supports __builtin_isnanl */
-#undef _HAVE_BUILTIN_ISNANL
-
-/* The compiler supports __builtin_issignalingl */
-#undef _HAVE_BUILTIN_ISSIGNALINGL
-
-/* Compiler has __builtin_mul_overflow */
-#define _HAVE_BUILTIN_MUL_OVERFLOW
-
-/* Compiler flag to prevent detecting memcpy/memset patterns */
-#undef _HAVE_CC_INHIBIT_LOOP_TO_LIBCALL
-
-/* Compiler supports _Complex */
-#define _HAVE_COMPLEX
-
-#undef _HAVE_FCNTL
-
-#define _HAVE_FORMAT_ATTRIBUTE
-
-/* IEEE fp funcs available */
-#undef _HAVE_IEEEFP_FUNCS
-
-/* compiler supports INIT_ARRAY sections */
-#define _HAVE_INITFINI_ARRAY
-
-/* Support _init() and _fini() functions */
-#define _HAVE_INIT_FINI
-
-/* Compiler has long double type */
-#define _HAVE_LONG_DOUBLE
-
-/* Compiler attribute to prevent the optimizer from adding new builtin calls */
-#define _HAVE_NO_BUILTIN_ATTRIBUTE
-
-/* _set_tls and _init_tls functions available */
-#define _HAVE_PICOLIBC_TLS_API
-
-/* Use Raspberry Pi RP2040 CPUID register to index thread local storage value */
-#undef _HAVE_PICOLIBC_TLS_RP2040
-
-/* Semihost APIs supported */
-#define _HAVE_SEMIHOST
-
-#define _HAVE_WEAK_ATTRIBUTE
-
-/* math library does not set errno (offering only ieee semantics) */
-#define _IEEE_LIBM
-
-#define _IO_FLOAT_EXACT
-
-#define _LITE_EXIT
-
-#undef _MB_CAPABLE
-
-#undef _MB_EXTENDED_CHARSETS_ISO
-
-#undef _MB_EXTENDED_CHARSETS_JIS
-
-#undef _MB_EXTENDED_CHARSETS_UCS
-
-#undef _MB_EXTENDED_CHARSETS_WINDOWS
-
-#undef _NANO_FORMATTED_IO
-
-#define _NANO_MALLOC
-
-#undef _NANO_MALLOC_CLEAR_FREED
-
 /* The newlib version in string format. */
 #define _NEWLIB_VERSION "4.3.0"
 
-/* Turn on mmu in picocrt startup code */
-#define _PICOCRT_ENABLE_MMU
+/* ARM Semihost APIs supported */
+#define __ARM_SEMIHOST
 
-/* Use atomics for signal/raise for re-entrancy */
-#define _PICOLIBC_ATOMIC_SIGNAL
+/* assert() is verbose by default */
+#define __ASSERT_VERBOSE
 
-/* The Picolibc minor version number. */
-#define _PICOLIBC_MINOR__ 8
+/* Use atomics for fgetc/ungetc for re-entrancy */
+#define __ATOMIC_UNGETC
 
-/* The Picolibc version in string format. */
-#define _PICOLIBC_VERSION "1.8.9"
+#undef __FAST_BUFIO
 
-/* The Picolibc major version number. */
-#define _PICOLIBC__ 1
+/* Always optimize strcmp for performance */
+#define __FAST_STRCMP
 
-#define _PICO_EXIT
+/* use global errno variable */
+#undef __GLOBAL_ERRNO
+
+/* Use bitfields in packed structs */
+#define __HAVE_BITFIELDS_IN_PACKED_STRUCTS
+
+/* The compiler supports __builtin_complex */
+#define __HAVE_BUILTIN_COMPLEX 1
+
+/* Compiler flag to prevent detecting memcpy/memset patterns */
+#undef __HAVE_CC_INHIBIT_LOOP_TO_LIBCALL
+
+/* Compiler supports _Complex */
+#define __HAVE_COMPLEX
+
+/* System provides fcntl function */
+#undef __HAVE_FCNTL
+
+/* IEEE fp funcs available */
+#undef __IEEEFP_FUNCS
+
+/* math library does not set errno (offering only ieee semantics) */
+#define __IEEE_LIBM
+
+/* Support INIT_ARRAY linker sections */
+#define __INIT_FINI_ARRAY
+
+/* Support _init() and _fini() functions */
+#define __INIT_FINI_FUNCS
+
+#define __IO_C99_FORMATS
+
+/* The default printf and scanf variants */
+#define __IO_DEFAULT 'd'
+
+#define __IO_FLOAT_EXACT
+
+#undef __IO_LONG_DOUBLE
+
+#undef __IO_LONG_LONG
+
+#undef __IO_MINIMAL_LONG_LONG
+
+#undef __IO_PERCENT_B
 
 /* support %n in printf format strings */
-#undef _PRINTF_PERCENT_N
+#undef __IO_PERCENT_N
+
+#undef __IO_POS_ARGS
 
 /* avoid software division in decimal conversion */
-#define _PRINTF_SMALL_ULTOA
+#define __IO_SMALL_ULTOA
 
-#define _REENT_GLOBAL_ATEXIT
-
-#define _RETARGETABLE_LOCKING
-
-#undef _UNBUF_STREAM_OPT
-
-#undef _WANT_FAST_BUFIO
-
-#define _WANT_IO_C99_FORMATS
-
-#undef _WANT_IO_LONG_DOUBLE
-
-#undef _WANT_IO_LONG_LONG
-
-#undef _WANT_IO_PERCENT_B
-
-#undef _WANT_IO_POS_ARGS
-
-#undef _WANT_IO_WCHAR
+#undef __IO_WCHAR
 
 /* math library sets errno */
-#undef _WANT_MATH_ERRNO
+#undef __MATH_ERRNO
 
-#undef _WANT_MINIMAL_IO_LONG_LONG
+#undef __MB_CAPABLE
 
-#undef _WANT_REENT_SMALL
+/* Provide smaller malloc implementation */
+#define __NANO_MALLOC
 
-#undef _WANT_REGISTER_FINI
-
-/* Obsoleted. Define time_t to long instead of using a 64-bit type */
-#undef _WANT_USE_LONG_TIME_T
-
-#undef _WIDE_ORIENT
+#undef __NANO_MALLOC_CLEAR_FREED
 
 /* The newlib minor version number. */
 #define __NEWLIB_MINOR__ 3
 
 /* The newlib patch level. */
 #define __NEWLIB_PATCHLEVEL__ 0
+
+/* The newlib version in string format. */
+#define __NEWLIB_VERSION__ "4.3.0"
 
 /* The newlib major version number. */
 #define __NEWLIB__ 4
@@ -274,20 +108,50 @@
 /* Use old math code for float funcs (undef auto, 0 no, 1 yes) */
 #undef __OBSOLETE_MATH_FLOAT
 
+/* Turn on mmu in picocrt startup code */
+#define __PICOCRT_ENABLE_MMU
+
 /* Compute static memory area sizes at runtime instead of link time */
-#undef __PICOLIBC_CRT_RUNTIME_SIZE
+#undef __PICOCRT_RUNTIME_SIZE
 
 /* The Picolibc minor version number. */
 #define __PICOLIBC_MINOR__ 8
 
 /* The Picolibc patch level. */
-#define __PICOLIBC_PATCHLEVEL__ 9
+#define __PICOLIBC_PATCHLEVEL__ 10
 
 /* The Picolibc version in string format. */
-#define __PICOLIBC_VERSION__ "1.8.9"
+#define __PICOLIBC_VERSION__ "1.8.10"
 
 /* The Picolibc major version number. */
 #define __PICOLIBC__ 1
 
-#undef __SINGLE_THREAD__
+#define __PICO_EXIT
+
+/* Optimize for space over speed */
+#define __PREFER_SIZE_OVER_SPEED
+
+/* Semihost APIs supported */
+#define __SEMIHOST
+
+/* Disable multi-thread support */
+#undef __SINGLE_THREAD
+
+/* Perform POSIX-conforming file locking for all stdio operations */
+#undef __STDIO_LOCKING
+
+/* use thread local storage */
+#define __THREAD_LOCAL_STORAGE
+
+/* _set_tls and _init_tls functions available */
+#define __THREAD_LOCAL_STORAGE_API
+
+/* Use Raspberry Pi RP2040 CPUID register to index thread local storage value */
+#undef __THREAD_LOCAL_STORAGE_RP2040
+
+/* use thread local storage for stack protection canary */
+#undef __THREAD_LOCAL_STORAGE_STACK_GUARD
+
+/* Use tiny stdio from gcc avr */
+#define __TINY_STDIO
 

@@ -73,7 +73,8 @@ SECTIONS
 		/* code */
 		*(.literal.unlikely .text.unlikely .literal.unlikely.* .text.unlikely.*)
 		*(.literal.startup .text.startup .literal.startup.* .text.startup.*)
-		*(.literal .text .literal.* .text.* .opd .opd.*)
+		*(SORT(.text.sorted.*))
+		*(.literal .text .literal.* .text.* .opd .opd.* .branch_lt .branch_lt.* )
 		*(.gnu.linkonce.t.*)
 		KEEP (*(.fini .fini.*))
 		__text_end = .;
@@ -87,6 +88,7 @@ SECTIONS
 
 		/* lists of constructors and destructors */
 		PROVIDE_HIDDEN ( __preinit_array_start = . );
+		PROVIDE_HIDDEN ( __bothinit_array_start = . );
 		KEEP (*(.preinit_array))
 		PROVIDE_HIDDEN ( __preinit_array_end = . );
 
@@ -94,10 +96,12 @@ SECTIONS
 		KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
 		KEEP (*(.init_array .ctors))
 		PROVIDE_HIDDEN ( __init_array_end = . );
+		PROVIDE_HIDDEN ( __bothinit_array_end = . );
 
 		PROVIDE_HIDDEN ( __fini_array_start = . );
 		KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
 		KEEP (*(.fini_array .dtors))
+		KEEP (*(.fini_array*))
 		PROVIDE_HIDDEN ( __fini_array_end = . );
 
 	} >flash AT>flash :text
@@ -106,7 +110,7 @@ SECTIONS
 
 		/* read-only data */
 		*(.rdata)
-		*(.rodata .rodata.*)
+		*(.rodata .rodata.* )
 		*(.gnu.linkonce.r.*)
 
 		*(.srodata.cst16)
@@ -116,6 +120,7 @@ SECTIONS
 		*(.srodata .srodata.*)
 
 	} >flash AT>flash :text
+	PROVIDE(_pid_base = ADDR(.rodata));
 
 	.data.rel.ro : {
 
@@ -123,6 +128,22 @@ SECTIONS
 		*(.data.rel.ro .data.rel.ro.*)
 
 	} >flash AT>flash :text
+
+	/*
+	 * Procedure linkage table. This ends up
+	 * with an array of structs containing pointers
+	 * to the function descriptors and iplt references
+	 * that need to contain them after startup.
+	 */
+	/* For ld.bfd: 
+	.plt : {
+		*(.rela.iplt)
+		*(.rela.*)
+	} >flash AT>flash :text
+
+	PROVIDE( __plt_start = ADDR(.plt) );
+	PROVIDE( __plt_size = SIZEOF(.plt) );
+	*/
 
 	/*
 	 * Needs to be in its own segment with the PLT entries first
@@ -136,6 +157,12 @@ SECTIONS
 
 	.toc : {
 		*(.toc .toc.*)
+		/*
+		 * These get written at startup, so this isn't correct,
+		 * but they must be reachable from tocbase so we can't
+		 * stick them in :ram
+		 */
+		*(.iplt .iplt.*)
 	} >flash AT>flash :text
 
 	/* additional sections when compiling with C++ exception support */
@@ -175,7 +202,7 @@ SECTIONS
 	} >ram AT>ram :ram
 
 	.data : /* For ld.bfd:  ALIGN_WITH_INPUT */ {
-		*(.data .data.*)
+		*(.data .data.* )
 		*(.gnu.linkonce.d.*)
 
 		/* Need to pre-align so that the symbols come after padding */
@@ -183,11 +210,23 @@ SECTIONS
 
 		PROVIDE( __global_pointer$ = . + 0x800 );
 		PROVIDE( _gp = . + 0x8000);
-		*(.sdata .sdata.* .sdata2.*)
+		*(.sdata .sdata.* .sdata2.* )
 		*(.gnu.linkonce.s.*)
+		/*
+		 * Make sure there is space for PowerPC thread-local
+		 * stack-check value which lives before the thread
+		 * local storage block. We can't include this in
+		 * .tdata because the linker would then allocate TLS
+		 * offsets for it; in reality, it lives at a known
+		 * fixed offset outside of the usual TLS range
+		 */
+		PROVIDE( __stack_chk_start = .);
+		KEEP (*(.stack_chk .stack_chk.*))
+		PROVIDE( __stack_chk_end = .);
 	} >ram AT>flash :ram_init
 	PROVIDE(__data_start = ADDR(.data));
 	PROVIDE(__data_source = LOADADDR(.data));
+	PROVIDE(__x86_gdt_ro = DEFINED(__x86_gdt) ? __x86_gdt - __data_start + __data_source : 0);
 
 	/* Thread local initialized data. This gets
 	 * space allocated as it is expected to be placed
@@ -206,12 +245,12 @@ SECTIONS
 		PROVIDE(__data_end = .);
 		PROVIDE(__tdata_end = .);
 	} >ram AT>flash :tls :ram_init
-	PROVIDE( __tls_base = ADDR(.tdata));
-	PROVIDE( __tdata_start = ADDR(.tdata));
-	PROVIDE( __tdata_source = LOADADDR(.tdata) );
+	PROVIDE( __stack_chk_size = __stack_chk_end - __stack_chk_start );
+	PROVIDE( __tdata_start = ADDR(.tdata) - __stack_chk_size );
+	PROVIDE( __tdata_source = LOADADDR(.tdata) - __stack_chk_size );
 	PROVIDE( __tdata_source_end = LOADADDR(.tdata) + SIZEOF(.tdata) );
 	PROVIDE( __data_source_end = __tdata_source_end );
-	PROVIDE( __tdata_size = SIZEOF(.tdata) );
+	PROVIDE( __tdata_size = SIZEOF(.tdata) + __stack_chk_size );
 
 	PROVIDE( __edata = __data_end );
 	PROVIDE( _edata = __data_end );
@@ -225,15 +264,21 @@ SECTIONS
 		PROVIDE( __tls_end = . );
 		PROVIDE( __tbss_end = . );
 	} >ram AT>ram :tls :ram
+	PROVIDE( __tls_first = SIZEOF(.tdata) ? ADDR(.tdata) : ADDR(.tbss) );
+	PROVIDE( __tls_base = __tls_first - __stack_chk_size );
 	PROVIDE( __bss_start = ADDR(.tbss));
 	PROVIDE( __tbss_start = ADDR(.tbss));
-	PROVIDE( __tbss_offset = ADDR(.tbss) - ADDR(.tdata) );
+	PROVIDE( __tbss_offset = ADDR(.tbss) - __tls_first );
 	PROVIDE( __tbss_size = SIZEOF(.tbss) );
-	PROVIDE( __tls_size = __tls_end - __tls_base );
 	PROVIDE( __tls_align = MAX(ALIGNOF(.tdata), ALIGNOF(.tbss)) );
+	PROVIDE( __tls_size = (__tls_tail_extra_size ? ALIGN(__tls_end, __tls_align) + __tls_tail_extra_size : __tls_end) - __tls_base );
 	PROVIDE( __tls_size_align = (__tls_size + __tls_align - 1) & ~(__tls_align - 1));
 	PROVIDE( __arm32_tls_tcb_offset = MAX(8, __tls_align) );
 	PROVIDE( __arm64_tls_tcb_offset = MAX(16, __tls_align) );
+	PROVIDE( __or1k_tls_tcb_offset = MAX(16, __tls_align) );
+	PROVIDE( __sh32_tls_tcb_offset = MAX(8, __tls_align) );
+	PROVIDE( __x86_tls_tcb = ALIGN(__tls_end, __tls_align) );
+	PROVIDE( __x86_tls_tcb_offset = __x86_tls_tcb - __tls_base );
 
 	/*
 	 * Unlike ld.lld, ld.bfd does not advance the location counter for
@@ -248,9 +293,28 @@ SECTIONS
 	} >ram AT>ram :ram
 	*/
 	.bss (NOLOAD) : {
-		*(.sbss*)
+		/*
+		 * For the x86-32 and x86-64, we must further allocate extra
+		 * space for the thread control block -- at a minimum, the
+		 * TCB needs to contain a pointer to itself
+		 * (https://akkadia.org/drepper/tls.pdf).  Unlike the
+		 * PowerPC case, the x86 TCB appears after the thread local
+		 * variables.
+		 * On the x86, the precise procedure to set the TCB pointer
+		 * depends on the operating system.  The system library
+		 * should implement a __set_tcb() function to set this
+		 * pointer (similar to OpenBSD's, https://man.openbsd.org/
+		 *__get_tcb.2).  __set_tcb() will be called by _set_tls().
+		 */
+		. = ALIGN(__tls_align);
+		PROVIDE( __tls_tail_extra_start = . );
+		KEEP (*(.tls_tail_extra .tls_tail_extra.*))
+		PROVIDE( __tls_tail_extra_end = . );
+
+		PROVIDE( __non_tls_bss_start = . );
+		*(.sbss* )
 		*(.gnu.linkonce.sb.*)
-		*(.bss .bss.*)
+		*(.bss .bss.* )
 		*(.gnu.linkonce.b.*)
 		*(COMMON)
 
@@ -258,7 +322,7 @@ SECTIONS
 		. = ALIGN(8);
 		__bss_end = .;
 	} >ram AT>ram :ram
-	PROVIDE( __non_tls_bss_start = ADDR(.bss) );
+	PROVIDE( __tls_tail_extra_size = __tls_tail_extra_end - __tls_tail_extra_start );
 	PROVIDE( __end = __bss_end );
 	_end = __bss_end;
 	PROVIDE( end = __bss_end );

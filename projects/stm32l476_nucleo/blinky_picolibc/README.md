@@ -121,7 +121,7 @@ podman build -f ContainerFile --tag=picolibc .
 # Run a container
 podman run --rm -it -v ./:/workspace --name=picolibc picolibc
 # Configure
-mkdir -p build/picolib && cd build/picolib
+mkdir -p build/picolibc && cd build/picolibc
 meson setup --cross-file /workspace/libc/cross-clang-thumbv7e+fp-custom.txt \
     --prefix=/workspace/libc \
     -Dtests=false \
@@ -129,6 +129,7 @@ meson setup --cross-file /workspace/libc/cross-clang-thumbv7e+fp-custom.txt \
     -Dnewlib-global-atexit=true  \
     -Ddebug=false \
     -Doptimization=s \
+    -Dinitfini=true \
     /picolibc/
 
 # Install
@@ -184,7 +185,7 @@ __stack_size = 512;
 INCLUDE libc/lib/picolibc.ld
 ```
 
-Picolibc got some options to choices for `printf` and `scanf`. You need to use `-Wl,--defsym` or `-Wl,-alias` arguments. But you can use the linker script too
+Picolibc got some options to choices for `printf` and `scanf`. You need to use `-Wl,--defsym` or `-Wl,-alias` linker arguments. With Zig, the linker script will be preferred :
 
 ```ld
 /* Printf and Scanf Options. Equivalent to --defsym  */
@@ -196,10 +197,17 @@ vfscanf = __m_vfscanf; /*disable*/
 /* PROVIDE(vfscanf = __m_vfscanf); */
 ```
 
+Picolibc requires the preprocessor definitions `-D_PICOLIBC_PRINTF='m'` and `-D_PICOLIBC_SCANF='m'`. These can be set using the `addCMacro` function.
+
+```zig
+exe_mod.addCMacro("_PICOLIBC_PRINTF", "m");
+exe_mod.addCMacro("_PICOLIBC_SCANF", "m");
+```
+The configuration above disables floating-point printf/scanf support during application builds. You can modify this option as needed. [Reference](https://github.com/picolibc/picolibc/blob/1.8.10/doc/printf.md).
+
 **Adapt the linker script from STM32CubeMX**
 
 Target linker script now can just specify flash memory option, extra section and so on. See the new linker script `stm32l476rgtx_flash.ld` that add information about the second ram section `.ram2` and set formatting options.
-
 
 ### Update the startup and the Vector Table
 

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Enable the sanitizers only for safe release builds.
+- Zig bump version to 0.14.1
+- Picolibc bump version to 1.8.10
+
 ## [0.14.0] - 2025-05-24
 
 ### Added
