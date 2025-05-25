@@ -30,7 +30,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
-        .sanitize_c = if (optimization == .Debug or optimization == .ReleaseFast) false else true,
+        .sanitize_c = if (optimization == .ReleaseSafe) true else false,
     });
 
     const elf = b.addExecutable(.{
@@ -103,6 +103,8 @@ pub fn build(b: *std.Build) void {
     //////////////////////////////////////////////////////////////////
     exe_mod.addCMacro("USE_HAL_DRIVER", "");
     exe_mod.addCMacro("STM32L476xx", "");
+    exe_mod.addCMacro("_PICOLIBC_PRINTF", "m");
+    exe_mod.addCMacro("_PICOLIBC_SCANF", "m");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     elf.setLinkerScript(b.path("stm32l476rgtx_flash.ld"));
