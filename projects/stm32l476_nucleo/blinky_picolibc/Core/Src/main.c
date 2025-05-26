@@ -64,7 +64,7 @@ extern void zigEntrypoint(void);
 extern void SystemInit(void);
 
 // Picolibc will call _init before entering in main
-#ifdef _HAVE_INIT_FINI
+#ifdef __INIT_FINI_FUNCS
 // FIXME: If you use crt0-minimal.o, this function will not be called.
 void _init(void)
 {

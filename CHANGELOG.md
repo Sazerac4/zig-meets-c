@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Enable the sanitizers only for safe release builds.
+- Zig bump version to 0.14.1
+- Picolibc bump version to 1.8.10
+- Move picolibc into libraries folder.
+
+## Fixed
+
+- Change incorrect option from `-mfpu=fpv5-sp-d16` to `-mfpu=fpv4-sp-d16` when build picolibc for Cortex-M4
+
 ## [0.14.0] - 2025-05-24
 
 ### Added

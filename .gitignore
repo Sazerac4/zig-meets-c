@@ -1,24 +1,21 @@
 ######################################################################
 # User
 ######################################################################
-#Makefile from CubeMX are not used anymore to compile, use Zig instead
+#Auto-generated Makefile from CubeMX not used
 Makefile
 *.mk
+.mxproject
 
-# Folder that the user doesn't want to track content
-**/tmp/
 # Clangd cache
 **/.cache/ 
-
-# STM32 tools
-.mxproject
 
 # VS code
 **/.vscode/settings.json
 **/.vscode/.cortex-debug.*.json
 *.code-workspace
 
-# miscellaneous files
+# Miscellaneous files and folder
+**/tmp/
 *.log
 *.bak
 *.old

@@ -30,7 +30,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
-        .sanitize_c = if (optimization == .Debug or optimization == .ReleaseFast) false else true,
+        .sanitize_c = if (optimization == .ReleaseSafe) true else false,
     });
 
     const elf = b.addExecutable(.{
@@ -39,13 +39,14 @@ pub fn build(b: *std.Build) void {
         .root_module = exe_mod,
     });
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    elf.addLibraryPath(.{ .cwd_relative = "libc/lib/" });
-    elf.addSystemIncludePath(.{ .cwd_relative = "libc/include" });
+    //////////////////////////////////////////////////////////////////
+    // Libc integration
+    elf.addLibraryPath(.{ .cwd_relative = "../../../libraries/picolibc/thumbv7e+fp/lib/" });
+    elf.addSystemIncludePath(.{ .cwd_relative = "../../../libraries/picolibc/thumbv7e+fp/include" });
     elf.linkSystemLibrary("c_pico");
     elf.linkSystemLibrary("crt0");
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
     const c_includes = [_][]const u8{ "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include" };
     const c_sources_drivers = [_][]const u8{
         "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c",
@@ -103,6 +104,8 @@ pub fn build(b: *std.Build) void {
     //////////////////////////////////////////////////////////////////
     exe_mod.addCMacro("USE_HAL_DRIVER", "");
     exe_mod.addCMacro("STM32L476xx", "");
+    exe_mod.addCMacro("_PICOLIBC_PRINTF", "m");
+    exe_mod.addCMacro("_PICOLIBC_SCANF", "m");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     elf.setLinkerScript(b.path("stm32l476rgtx_flash.ld"));
