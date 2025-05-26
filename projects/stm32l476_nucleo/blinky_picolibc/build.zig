@@ -39,13 +39,14 @@ pub fn build(b: *std.Build) void {
         .root_module = exe_mod,
     });
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    elf.addLibraryPath(.{ .cwd_relative = "libc/lib/" });
-    elf.addSystemIncludePath(.{ .cwd_relative = "libc/include" });
+    //////////////////////////////////////////////////////////////////
+    // Libc integration
+    elf.addLibraryPath(.{ .cwd_relative = "../../../libraries/picolibc/thumbv7e+fp/lib/" });
+    elf.addSystemIncludePath(.{ .cwd_relative = "../../../libraries/picolibc/thumbv7e+fp/include" });
     elf.linkSystemLibrary("c_pico");
     elf.linkSystemLibrary("crt0");
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
     const c_includes = [_][]const u8{ "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include" };
     const c_sources_drivers = [_][]const u8{
         "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c",
