@@ -156,7 +156,7 @@ pub fn build(b: *std.Build) void {
     exe_mod.addCMacro("STM32L476xx", "");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    elf.setLinkerScript(b.path("stm32l476rgtx_flash.ld"));
+    elf.setLinkerScript(b.path("stm32l476xx_flash.ld"));
     elf.want_lto = true; // -flto
     elf.link_data_sections = true; // -fdata-sections
     elf.link_function_sections = true; // -ffunction-sections

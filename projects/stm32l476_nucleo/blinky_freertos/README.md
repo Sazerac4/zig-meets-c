@@ -28,7 +28,7 @@ To use Zig in any microcontrollers `STM32CubeMX` generated project, follow these
     const gcc_arm_multidir_relative_path = std.mem.trim(u8, b.run(&.{ arm_gcc_pgm, "-mcpu=cortex-m4", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard", "-print-multi-directory" }), "\r\n");
     ```
 
-4. **Update the linker script** (`stm32l476rgtx_flash.ld`). Some adjustments are required to make it compatible with `lld`, the linker used by Zig.
+4. **Update the linker script** (`STM32L476XX_FLASH.ld`). Some adjustments are required to make it compatible with `lld`, the linker used by Zig.
 
     1. Move the declaration for `_estack` to after the `RAM` region is defined.
     2. The section `_user_heap_stack` is located in RAM (and thus won’t be flashed to the device), so it should be marked with `(NOLOAD)` as shown below:
@@ -44,6 +44,9 @@ To use Zig in any microcontrollers `STM32CubeMX` generated project, follow these
         . = ALIGN(8);
     } >RAM
     ```
+
+    3. Remove `READONLY` from all sections (6.14.1 Update). For example, change: `.ARM (READONLY) :` to `.ARM: `
+    4. (Optional) Rename the file to prevent STM32CubeMX from regenerating it each time you update your settings. In this example, use a lowercase name: `stm32l476xx_flash.ld`.
 
 5. **Create a `main.zig` file** with a custom entry point, such as `zigEntrypoint`.
 6. **Call the `zigEntrypoint` function** from the `main` function located in the `Core/Src/main.c` file.

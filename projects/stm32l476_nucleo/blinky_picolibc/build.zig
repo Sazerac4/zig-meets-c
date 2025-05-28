@@ -108,7 +108,7 @@ pub fn build(b: *std.Build) void {
     exe_mod.addCMacro("_PICOLIBC_SCANF", "m");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    elf.setLinkerScript(b.path("stm32l476rgtx_flash.ld"));
+    elf.setLinkerScript(b.path("stm32l476_picolibc.ld"));
     elf.entry = .{ .symbol_name = "_start" }; // Set Entry Point of the firmware (Already set in the linker script)
     elf.want_lto = true; // -flto
     elf.link_data_sections = true; // -fdata-sections

@@ -66,7 +66,7 @@ List of tools that is used around examples
 | LLVM+Clang        | `19.1.7`  | Tools for C development (clang-format, clang-tidy, clangd)              |
 | ST link           | `v1.8.0`  | For flashing firmware                                                   |
 | OpenOCD           | `v0.12.0` | To provide debugging                                                    |
-| STM32CubeMX       | `6.13.0`  | For the generation of the corresponding initialization C code for STM32 |
+| STM32CubeMX       | `6.14.1`  | For the generation of the corresponding initialization C code for STM32 |
 
 
 Some of theses tools are downloaded from the [xPack Binary Development Tools](https://xpack-dev-tools.github.io/) project.
