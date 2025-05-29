@@ -110,7 +110,7 @@ pub fn build(b: *std.Build) void {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     elf.setLinkerScript(b.path("stm32l476_picolibc.ld"));
     elf.entry = .{ .symbol_name = "_start" }; // Set Entry Point of the firmware (Already set in the linker script)
-    elf.want_lto = true; // -flto
+    elf.want_lto = false; // -flto
     elf.link_data_sections = true; // -fdata-sections
     elf.link_function_sections = true; // -ffunction-sections
     elf.link_gc_sections = true; // -Wl,--gc-sections

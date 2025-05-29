@@ -2,7 +2,6 @@ const std = @import("std");
 const c = @cImport({
     @cDefine("USE_HAL_DRIVER", {});
     @cDefine("STM32L476xx", {});
-    @cDefine("__PROGRAM_START", {}); //bug: https://github.com/ziglang/zig/issues/22671
     @cInclude("main.h");
     @cInclude("usart.h");
 });

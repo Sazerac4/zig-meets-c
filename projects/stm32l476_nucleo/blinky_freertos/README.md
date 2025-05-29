@@ -2,7 +2,7 @@
 
 This has the same goal as the **blinky** example, but it is an experiment to implement it using a **FreeRTOS task**.  
 The FreeRTOS source was included in the compilation script. Using **libc** is now mandatory, and we rely on **newlib** provided by GCC (`elf.linkSystemLibrary("c_nano");`).  
-Our Zig code begins at `zigEntrypoint`, and this function is called from C code using linker capabilities. The function is tagged with `callconv(.C)` to ensure compatibility with the C ABI.
+Our Zig code begins at `zigEntrypoint`, and this function is called from C code using linker capabilities. The function is tagged with `callconv(.c)` to ensure compatibility with the C ABI.
 
 ## Use Zig after generating the project with STM32CubeMX
 
@@ -62,7 +62,7 @@ __Notes__
 zig build
 # Upload using stlink-tools
 zig build flash
-# Rmemove .zig-cache folder
+# Remove .zig-cache folder
 zig build clean
 ```
 

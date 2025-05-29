@@ -163,8 +163,7 @@ pub fn build(b: *std.Build) void {
         .flags = &os_flags,
     });
 
-    //Need libc
-    os_mod.addSystemIncludePath(.{ .cwd_relative = b.fmt("{s}/include", .{gcc_arm_sysroot_path}) });
+    os_mod.addSystemIncludePath(.{ .cwd_relative = b.fmt("{s}/include", .{gcc_arm_sysroot_path}) }); //Need libc includes
     os_mod.addCMacro("USE_HAL_DRIVER", "");
     os_mod.addCMacro("STM32L476xx", "");
 
