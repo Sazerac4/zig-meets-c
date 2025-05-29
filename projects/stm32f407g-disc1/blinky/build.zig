@@ -195,7 +195,7 @@ pub fn build(b: *std.Build) void {
     exe_mod.addCMacro("USE_HAL_DRIVER", "");
     exe_mod.addCMacro("STM32F407xx", "");
     elf.setLinkerScript(b.path("stm32f407xx_flash.ld"));
-    elf.want_lto = false; // -flto. g_pfnVectors will be discarded is set to true.
+    elf.want_lto = false; // -flto. g_pfnVectors will be discarded if set to true.
     elf.link_data_sections = true; // -fdata-sections
     elf.link_function_sections = true; // -ffunction-sections
     elf.link_gc_sections = true; // -Wl,--gc-sections
