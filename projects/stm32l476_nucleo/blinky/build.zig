@@ -87,7 +87,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
-        .sanitize_c = if (optimization == .Debug or optimization == .ReleaseFast) false else true,
+        .sanitize_c = if (optimization == .ReleaseSafe) true else false,
     });
 
     const hal_includes = [_][]const u8{ "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };
@@ -156,8 +156,8 @@ pub fn build(b: *std.Build) void {
     exe_mod.addCMacro("STM32L476xx", "");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    elf.setLinkerScript(b.path("stm32l476rgtx_flash.ld"));
-    elf.want_lto = true; // -flto
+    elf.setLinkerScript(b.path("stm32l476xx_flash.ld"));
+    elf.want_lto = false; // -flto
     elf.link_data_sections = true; // -fdata-sections
     elf.link_function_sections = true; // -ffunction-sections
     elf.link_gc_sections = true; // -Wl,--gc-sections

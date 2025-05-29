@@ -7,16 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+
+- Add STM32F407 blinky example. Startup and vector table written in Zig.
+- Add `@breakpoint();` to `defaultHandler` function.
+
 ### Changed
 
 - Enable the sanitizers only for safe release builds.
 - Zig bump version to 0.14.1
 - Picolibc bump version to 1.8.10
 - Move picolibc into libraries folder.
+- Set `want_lto=false` by default, as FreeRTOS and STM32F407 example experience symbol removal issues.
+- Use `comptime` block to export vector table and startup code instead of exported functions 
 
 ## Fixed
 
 - Change incorrect option from `-mfpu=fpv5-sp-d16` to `-mfpu=fpv4-sp-d16` when build picolibc for Cortex-M4
+- `@cDefine("__PROGRAM_START", {});` not needed anymore (fixed with Zig 0.14.1)
 
 ## [0.14.0] - 2025-05-24
 

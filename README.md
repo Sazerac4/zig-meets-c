@@ -35,6 +35,7 @@ This is a work in progress, and help is welcome to add more examples, improve do
 - [Translate-C](https://github.com/ziglang/zig/labels/translate-c) command (and `@cImport`) has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files.
 - `Debug` Release mode without `-Og` optimization level can make binary too huge to fit in a device.
 - No option to have ubsan with trap instead of runtime. It will increase the binary size if not disable (Planned for 0.15.0.[Issue](https://github.com/ziglang/zig/issues/23216))
+- Set `want_lto` to true can cause startup function, vector_table and others symbol to be dropped, even if they are exported or used. ([Issue](https://github.com/ziglang/zig/issues/9844). Problem present with 0.14 releases)
 
 ## Examples List
 
@@ -66,7 +67,7 @@ List of tools that is used around examples
 | LLVM+Clang        | `19.1.7`  | Tools for C development (clang-format, clang-tidy, clangd)              |
 | ST link           | `v1.8.0`  | For flashing firmware                                                   |
 | OpenOCD           | `v0.12.0` | To provide debugging                                                    |
-| STM32CubeMX       | `6.13.0`  | For the generation of the corresponding initialization C code for STM32 |
+| STM32CubeMX       | `6.14.1`  | For the generation of the corresponding initialization C code for STM32 |
 
 
 Some of theses tools are downloaded from the [xPack Binary Development Tools](https://xpack-dev-tools.github.io/) project.

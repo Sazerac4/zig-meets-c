@@ -1,5 +1,6 @@
-///The code below is adapted from this [github repository](https://github.com/haydenridd/stm32-baremetal-zig/tree/main)
-export fn exportVectorTable() void {
+//The code below is adapted from this [github repository](https://github.com/haydenridd/stm32-baremetal-zig/tree/main)
+
+comptime {
     @export(&__interrupt_vector, .{
         .name = "__interrupt_vector",
         .section = ".text.init.enter",
@@ -29,6 +30,7 @@ extern fn _start() callconv(.c) void;
 //  Default Handler for Exceptions / Interrupts
 //----------------------------------------------------------------------------
 fn defaultHandler() callconv(.c) noreturn {
+    @breakpoint();
     while (true) {}
 }
 
