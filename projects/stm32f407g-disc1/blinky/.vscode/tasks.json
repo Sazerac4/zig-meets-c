@@ -1,0 +1,111 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "♻ Clean",
+            "type": "shell",
+            "linux": {
+                "command": "rm -rf -- ./.zig-cache",
+            },
+            "osx": {
+                "command": "rm -rf -- ./.zig-cache",
+            },
+            "windows": {
+                "command": "Remove-Item -Recurse -Force ./.zig-cache",
+            },
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "statusbar": {
+                    "hide": false,
+                    "color": "#686aec",
+                    "label": "♻ Clean"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true,
+            }
+        },
+        {
+            "label": "$(gear) Debug build",
+            "type": "shell",
+            "linux": {
+                "command": "zig build",
+            },
+            "osx": {
+                "command": "zig build",
+            },
+            "windows": {
+                "command": "zig build",
+            },
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "statusbar": {
+                    "color": "#48c548",
+                    "label": "$(gear) Debug"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "$(gear) Safe build",
+            "type": "shell",
+            "linux": {
+                "command": "zig build --release=safe",
+            },
+            "osx": {
+                "command": "zig build --release=safe",
+            },
+            "windows": {
+                "command": "zig build --release=safe",
+            },
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "statusbar": {
+                    "color": "#48c548",
+                    "label": "$(gear) Safe"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "$(chip) Flash chip",
+            "type": "shell",
+            "linux": {
+                "command": "zig build flash",
+            },
+            "osx": {
+                "command": "zig build flash",
+            },
+            "windows": {
+                "command": "zig build flash",
+            },
+            "options": {
+                "cwd": "${workspaceRoot}/",
+                "statusbar": {
+                    "color": "#dfdc2f",
+                    "label": "$(chip) Flash chip"
+                }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ]
+}

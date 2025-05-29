@@ -1,0 +1,7 @@
+Checks: '-*,bugprone-*,concurrency-*,-bugprone-reserved-identifier,-bugprone-easily-swappable-parameters'
+CheckOptions:
+    - key: bugprone-argument-comment.StrictMode
+      value: 1
+    - key: bugprone-exception-escape.FunctionsThatShouldNotThrow
+      value: main
+FormatStyle: 'file'

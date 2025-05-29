@@ -1,0 +1,11 @@
+CompileFlags:
+  Add: [ ]
+  Compiler: /opt/bin/arm-none-eabi-gcc   # Change argv[0] of compile flags
+
+Hover:
+  ShowAKA: No
+
+If:   # Apply this config conditionally
+  PathMatch: [Drivers/.*,Middlewares/.*]
+Diagnostics:
+  Suppress: '*'
