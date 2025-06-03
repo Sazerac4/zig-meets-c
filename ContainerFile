@@ -2,32 +2,29 @@ FROM debian:12
 LABEL description "Build zig examples" \
     maintainer="Sazerac4 <lm-embeddedsystems@laposte.net>"
 
-RUN mkdir -vp /opt/tools && mkdir -vp ~/.local/bin
+RUN mkdir -vp /opt/tools
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update --fix-missing && apt upgrade -y
 
 #Install tools
-RUN apt install --no-install-recommends -y xz-utils ca-certificates wget make stlink-tools openocd
+RUN apt install --no-install-recommends -y xz-utils ca-certificates curl make stlink-tools openocd
 
 #Install GCC
 ARG GCC_VERSION="14.2.1-1.1"
-RUN cd /tmp && wget https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v${GCC_VERSION}/xpack-arm-none-eabi-gcc-${GCC_VERSION}-linux-x64.tar.gz \
-    && tar -xf /tmp/xpack-arm-none-eabi-gcc-*-linux-x64.tar.gz -C /opt/tools/ \
-    && ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-*  ~/.local/bin
+RUN cd /tmp && curl -L -o arm-none-eabi-gcc.tar.gz https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v${GCC_VERSION}/xpack-arm-none-eabi-gcc-${GCC_VERSION}-linux-x64.tar.gz \
+    && tar -xf arm-none-eabi-gcc.tar.gz -C /opt/tools/ \
+    && ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-* /usr/local/bin/
 
 #Install Zig
 ARG ZIG_VERSION="0.14.1"
-RUN cd /tmp && wget https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz && \
-    tar -xf /tmp/zig-x86_64-linux-*.tar.xz -C /opt/tools/ && \
-    ln -s /opt/tools/zig-x86_64-linux-*/zig ~/.local/bin
+RUN cd /tmp && curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz \
+    &&  tar -xf zig.tar.xz -C /opt/tools/  \
+    &&  ln -s /opt/tools/zig-x86_64-linux-*/zig /usr/local/bin/
 
 #Clean image
 RUN apt clean && rm -rf -- /var/lib/apt/lists/* && rm -rf -- /tmp/*
 
-#Add Custom bin path
-ENV PATH="${PATH}:/root/.local/bin"
-
-WORKDIR /apps
-VOLUME  /apps
+WORKDIR /workspace
+VOLUME  /workspace
 
 CMD [ "/bin/bash" ]

@@ -1,0 +1,62 @@
+name: ci workflow
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  GCC_VERSION: "14.2.1-1.1"
+  ZIG_VERSION: "0.14.1"
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache ARM GCC
+        uses: actions/cache@v4
+        id: cache-gcc
+        with:
+          path: |
+            /opt/tools/xpack-arm-none-eabi-gcc-${{ env.GCC_VERSION }}
+            /usr/local/bin/arm-none-eabi-*
+          key: ${{ runner.os }}-arm-gcc-${{ env.GCC_VERSION }}
+
+      - name: Cache Zig
+        uses: actions/cache@v4
+        id: cache-zig
+        with:
+          path: | 
+            /opt/tools/zig-x86_64-linux-${{ env.ZIG_VERSION }}
+            /usr/local/bin/zig
+          key: ${{ runner.os }}-zig-${{ env.ZIG_VERSION }}
+
+      - name: Install ARM GCC
+        if: steps.cache-gcc.outputs.cache-hit != 'true'
+        run: |
+          mkdir -vp /opt/tools
+          curl -L -o arm-none-eabi-gcc.tar.gz https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v${GCC_VERSION}/xpack-arm-none-eabi-gcc-${GCC_VERSION}-linux-x64.tar.gz
+          tar -xf arm-none-eabi-gcc.tar.gz -C /opt/tools/
+          ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-* /usr/local/bin/
+          rm arm-none-eabi-gcc.tar.gz
+
+      - name: Install Zig
+        if: steps.cache-zig.outputs.cache-hit != 'true'
+        run: |
+          mkdir -vp /opt/tools
+          curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz
+          tar -xf zig.tar.xz -C /opt/tools/
+          ln -s /opt/tools/zig-x86_64-linux-*/zig /usr/local/bin/
+          rm zig.tar.xz
+
+      - name: Build examples
+        run: sh ci/build-examples.sh
