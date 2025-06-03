@@ -83,6 +83,58 @@
             }
         },
         {
+            "label": "$(gear) Fast build",
+            "type": "shell",
+            "linux": {
+                "command": "zig build --release=fast",
+            },
+            "osx": {
+                "command": "zig build --release=fast",
+            },
+            "windows": {
+                "command": "zig build --release=fast",
+            },
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "statusbar": {
+                    "color": "#48c548",
+                    "label": "$(gear) Fast"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "$(gear) Small build",
+            "type": "shell",
+            "linux": {
+                "command": "zig build --release=small",
+            },
+            "osx": {
+                "command": "zig build --release=small",
+            },
+            "windows": {
+                "command": "zig build --release=small",
+            },
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "statusbar": {
+                    "color": "#48c548",
+                    "label": "$(gear) Small"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "$(chip) Flash chip",
             "type": "shell",
             "linux": {

@@ -1,0 +1,3 @@
+#include picolibc archives and objects
+!*.a
+!*.o

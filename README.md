@@ -32,27 +32,25 @@ This is a work in progress, and help is welcome to add more examples, improve do
 - Using the libc with C code is currently a workaround, and Zig code will ignore it for now. (Planned for 0.15.0. [Issue](https://github.com/ziglang/zig/issues/20327))
 - JSON Compilation Database, which is used with many C tools (e.g., linters, LSPs, IDE,etc.), not yet supported. (Planned for 0.15.0. [PR](https://github.com/ziglang/zig/pull/22012)).  
 - `@cImport` is planned to work differently in the future. For more details, see this [Zig issue](https://github.com/ziglang/zig/issues/20630).
-- [Translate-C](https://github.com/ziglang/zig/labels/translate-c) command (and `@cImport`) has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files.
-- `Debug` Release mode without `-Og` optimization level can make binary too huge to fit in a device.
+- [Translate-C](https://github.com/ziglang/zig/labels/translate-c) command (and `@cImport`) has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files. (Work in Progress)
+- `Debug` Release mode without `-Og` optimization level can make binary too huge to fit in a device. However, the Clang documentation says `-Og Like -O1. In future versions, this option might disable different optimizations in order to improve debuggability.`, which could imply that the debugging experience may be less effective than with GCC.
 - No option to have ubsan with trap instead of runtime. It will increase the binary size if not disable (Planned for 0.15.0.[Issue](https://github.com/ziglang/zig/issues/23216))
-- Set `want_lto` to true can cause startup function, vector_table and others symbol to be dropped, even if they are exported or used. ([Issue](https://github.com/ziglang/zig/issues/9844). Problem present with 0.14 releases)
+- Set `want_lto` to true can cause startup functions, vector_table and others symbols to be dropped, even if they are exported or used. ([Issue](https://github.com/ziglang/zig/issues/9844). Problem present with 0.14 releases)
 
 ## Examples List
 
 The examples are built for a specific target. However, the documentation will try to explain enough about what Zig implies to change in an example so that you can figure out what you need to change when applying it to other targets (with more or less difficulty).
 
-1. Blinky Example 
-2. Blinky Example with PicolibC build
-3. Blinky Example with FreeRTOS 
-
 **Project tree**
 
 ```
 projects/
-└── stm32l476_nucleo/
-    ├── blinky/
-    ├── blinky_picolibc/
-    └── blinky_freertos/
+├── stm32f407g-disc1
+│   └── blinky
+└── stm32l476_nucleo
+    ├── blinky
+    ├── blinky_freertos
+    └── blinky_picolibc
 ```
 
 ## Installation
