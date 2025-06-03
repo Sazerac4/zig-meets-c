@@ -1,0 +1,13 @@
+.{
+    .name = .blinky_picolibc,
+    .version = "0.0.1",
+    .minimum_zig_version = "0.14.1",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "README.md",
+    },
+    .fingerprint = 0x95fe33a57c85b901,
+}

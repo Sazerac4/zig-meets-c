@@ -1,0 +1,13 @@
+.{
+    .name = .blinky_freertos,
+    .version = "0.0.1",
+    .minimum_zig_version = "0.14.1",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "README.md",
+    },
+    .fingerprint = 0xda3b46277f6a70de,
+}

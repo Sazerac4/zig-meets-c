@@ -20,6 +20,7 @@ extern const _estack: anyopaque;
 //  Exception / Interrupt Handler Function Prototype
 //----------------------------------------------------------------------------
 const IsrFunction = *const fn () callconv(.c) void;
+const ResetHandlerFunction = *const fn () callconv(.naked) noreturn;
 
 //----------------------------------------------------------------------------
 //  External References
@@ -137,7 +138,7 @@ const g_pfnVectors: VectorTable = .{};
 
 const VectorTable = extern struct {
     initial_stack_pointer: *const anyopaque = &_estack,
-    resetHandler: IsrFunction = resetHandler,
+    resetHandler: ResetHandlerFunction = resetHandler,
     NMI_Handler: IsrFunction = NMI_Handler orelse defaultHandler,
     HardFault_Handler: IsrFunction = HardFault_Handler orelse defaultHandler,
     MemManage_Handler: IsrFunction = MemManage_Handler orelse defaultHandler,
