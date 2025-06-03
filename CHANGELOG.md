@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `@breakpoint();` to `defaultHandler` function.
 - VSCode tasks for small and fast releases.
 - `build.zig.zon` for all examples.
+- Add a CI workflow and script to build all projects.
 
 ### Changed
 
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set `want_lto=false` by default, as FreeRTOS and STM32F407 example experience symbol removal issues.
 - Use `comptime` block to export vector table and startup code instead of exported functions 
 - Updated STM32F407 example: First instruction now calls `ldr sp, =_estack` (matches assembler version behavior).
+- Update the `ContainerFile` to mount the entire workspace. (Update `.gdbinit` files accordingly.)
 
 ### Fixed
 

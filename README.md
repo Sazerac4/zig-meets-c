@@ -11,6 +11,10 @@
     - [Containers (Podman or Docker)](#containers-podman-or-docker)
   - [SVD Files](#svd-files)
   - [Build](#build)
+  - [Testing and CI](#testing-and-ci)
+    - [Running Tests with the Repository Container](#running-tests-with-the-repository-container)
+    - [Testing GitHub Workflows Locally with Act](#testing-github-workflows-locally-with-act)
+      - [Using Act with Podman on Linux](#using-act-with-podman-on-linux)
   - [Resources](#resources)
 
 
@@ -117,7 +121,7 @@ Two technologies exist, both CLI APIs are mostly compatible: Docker and Podman. 
 #Create the image
 podman build -f ContainerFile --tag=zig_and_c:0.14.1 .
 #Run a container
-podman run --rm -it --privileged -v ./projects:/apps --name=zig_and_c zig_and_c:0.14.1
+podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.14.1
 # Navigate to a project (example blinky)
 cd stm32l476_nucleo/blinky
 # Build the firmware
@@ -143,6 +147,54 @@ You can found stm32 SVD files in this [Github repository](https://github.com/mod
 
 All projects use the [Zig Build System](https://ziglang.org/learn/build-system/).  
 Check the `README.md` of an project example for additional specific information.
+
+## Testing and CI
+
+### Running Tests with the Repository Container
+
+To execute tests using the project's container image:
+
+```bash
+# Run tests in the container
+podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.14.1 sh ci/build-examples.sh
+```
+
+### Testing GitHub Workflows Locally with Act
+
+You can test GitHub workflow modifications locally using [act](https://github.com/nektos/act).
+
+```bash
+# Display workflow graph
+act --graph
+# Run workflows locally
+act
+```
+
+#### Using Act with Podman on Linux
+
+To configure Act to use Podman instead of Docker:
+
+1. Set up Podman socket and aliases:
+```bash
+# Create Docker alias for Podman
+echo 'alias docker=podman' >> ~/.bashrc
+
+# Configure DOCKER_HOST for Podman
+echo "DOCKER_HOST=\"unix:///run/user/$(id -u)/podman/podman.sock\"" >> ~/.bashrc
+
+# Enable and start Podman socket
+systemctl --user enable --now podman.socket
+```
+
+2. (Optional) Enable user services to run at boot:
+```bash
+loginctl enable-linger $(whoami)
+```
+
+3. Reload your shell configuration:
+```bash
+source ~/.bashrc
+```
 
 ## Resources
 
