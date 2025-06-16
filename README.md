@@ -68,7 +68,7 @@ List of tools that is used around examples
 | Arm GNU Toolchain | `14.2.1`  | Tools for C development (gdb, binutils) and libc                        |
 | LLVM+Clang        | `19.1.7`  | Tools for C development (clang-format, clang-tidy, clangd)              |
 | ST link           | `v1.8.0`  | For flashing firmware                                                   |
-| OpenOCD           | `v0.12.0` | To provide debugging                                                    |
+| OpenOCD           | `v0.12.0` | Provides debugging and flashing capabilities.                           |
 | STM32CubeMX       | `6.14.1`  | For the generation of the corresponding initialization C code for STM32 |
 
 

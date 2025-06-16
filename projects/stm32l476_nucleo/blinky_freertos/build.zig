@@ -90,7 +90,14 @@ pub fn build(b: *std.Build) void {
         .sanitize_c = if (optimization == .ReleaseSafe) true else false,
     });
 
-    const hal_includes = [_][]const u8{ "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };
+    const hal_includes = [_][]const u8{
+        "Drivers/STM32L4xx_HAL_Driver/Inc",
+        "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+        "Drivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "Drivers/CMSIS/Include",
+        "Core/Inc",
+    };
+
     const hal_sources = [_][]const u8{
         "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c",
         "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c",
@@ -112,7 +119,12 @@ pub fn build(b: *std.Build) void {
         "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c",
         "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c",
     };
-    const hal_flags = [_][]const u8{ c_optimization, "-std=gnu17", "-Wall", "-Wextra" };
+    const hal_flags = [_][]const u8{
+        c_optimization,
+        "-std=gnu17",
+        "-Wall",
+        "-Wextra",
+    };
 
     for (hal_includes) |path| {
         hal_mod.addIncludePath(b.path(path));
@@ -139,7 +151,16 @@ pub fn build(b: *std.Build) void {
         .sanitize_c = if (optimization == .ReleaseSafe) true else false,
     });
 
-    const os_includes = [_][]const u8{ "Middlewares/Third_Party/FreeRTOS/Source/include", "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2", "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F", "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };
+    const os_includes = [_][]const u8{
+        "Middlewares/Third_Party/FreeRTOS/Source/include",
+        "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
+        "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+        "Drivers/STM32L4xx_HAL_Driver/Inc",
+        "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+        "Drivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "Drivers/CMSIS/Include",
+        "Core/Inc",
+    };
 
     const os_sources = [_][]const u8{
         "Middlewares/Third_Party/FreeRTOS/Source/croutine.c",
@@ -153,7 +174,12 @@ pub fn build(b: *std.Build) void {
         "Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c",
         "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c",
     };
-    const os_flags = [_][]const u8{ c_optimization, "-std=gnu17", "-Wall", "-Wextra" };
+    const os_flags = [_][]const u8{
+        c_optimization,
+        "-std=gnu17",
+        "-Wall",
+        "-Wextra",
+    };
 
     for (os_includes) |path| {
         os_mod.addIncludePath(b.path(path));
@@ -172,13 +198,39 @@ pub fn build(b: *std.Build) void {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const app_includes = [_][]const u8{ "Middlewares/Third_Party/FreeRTOS/Source/include", "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2", "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F", "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };
+    const app_includes = [_][]const u8{
+        "Middlewares/Third_Party/FreeRTOS/Source/include",
+        "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
+        "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+        "Drivers/STM32L4xx_HAL_Driver/Inc",
+        "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+        "Drivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "Drivers/CMSIS/Include",
+        "Core/Inc",
+    };
     for (app_includes) |path| {
         exe_mod.addIncludePath(b.path(path));
     }
 
-    const app_sources = [_][]const u8{ "Core/Src/main.c", "Core/Src/gpio.c", "Core/Src/usart.c", "Core/Src/stm32l4xx_hal_timebase_tim.c", "Core/Src/freertos.c", "Core/Src/stm32l4xx_it.c", "Core/Src/stm32l4xx_hal_msp.c", "Core/Src/system_stm32l4xx.c", "Core/Src/sysmem.c", "Core/Src/syscalls.c", "Core/Src/freertos-openocd.c" };
-    const app_flags = [_][]const u8{ c_optimization, "-std=gnu17", "-Wall", "-Wextra" };
+    const app_sources = [_][]const u8{
+        "Core/Src/main.c",
+        "Core/Src/gpio.c",
+        "Core/Src/usart.c",
+        "Core/Src/stm32l4xx_hal_timebase_tim.c",
+        "Core/Src/freertos.c",
+        "Core/Src/stm32l4xx_it.c",
+        "Core/Src/stm32l4xx_hal_msp.c",
+        "Core/Src/system_stm32l4xx.c",
+        "Core/Src/sysmem.c",
+        "Core/Src/syscalls.c",
+        "Core/Src/freertos-openocd.c",
+    };
+    const app_flags = [_][]const u8{
+        c_optimization,
+        "-std=gnu17",
+        "-Wall",
+        "-Wextra",
+    };
     exe_mod.addCSourceFiles(.{
         .files = &app_sources,
         .flags = &app_flags,
@@ -236,7 +288,7 @@ pub fn build(b: *std.Build) void {
     b.getInstallStep().dependOn(&copy_hex.step);
 
     //Add st-flash command (https://github.com/stlink-org/stlink)
-    const flash_cmd = b.addSystemCommand(&[_][]const u8{
+    const flash_stlink = b.addSystemCommand(&[_][]const u8{
         "st-flash",
         "--reset",
         "--freq=4000k",
@@ -245,9 +297,25 @@ pub fn build(b: *std.Build) void {
         "zig-out/bin/" ++ exe_name ++ ".hex",
     });
 
-    flash_cmd.step.dependOn(&bin.step);
-    const flash_step = b.step("flash", "Flash and run the app on your Nucleo-64");
-    flash_step.dependOn(&flash_cmd.step);
+    flash_stlink.step.dependOn(&bin.step);
+    const flash_step = b.step("flash", "Flash and run the firmware");
+    flash_step.dependOn(&flash_stlink.step);
+
+    const flash_openocd = b.addSystemCommand(&[_][]const u8{
+        "openocd",
+        "-c",
+        "adapter speed 4000",
+        "-f",
+        "interface/stlink.cfg",
+        "-f",
+        "target/stm32l4x.cfg",
+        "-c",
+        "program zig-out/bin/" ++ exe_name ++ ".elf verify reset exit",
+    });
+
+    flash_openocd.step.dependOn(&bin.step);
+    const flash_step_openocd = b.step("flash_openocd", "Flash and run the firmware");
+    flash_step_openocd.dependOn(&flash_openocd.step);
 
     const clean_step = b.step("clean", "Remove .zig-cache");
     clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.install_path }).step);

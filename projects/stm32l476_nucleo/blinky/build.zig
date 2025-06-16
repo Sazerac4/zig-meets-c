@@ -39,7 +39,6 @@ pub fn build(b: *std.Build) void {
         .root_module = exe_mod,
     });
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // User Options
     // Try to find arm-none-eabi-gcc program at a user specified path, or PATH variable if none provided
     const arm_gcc_pgm = if (b.option([]const u8, "ARM_GCC_PATH", "Path to arm-none-eabi-gcc compiler")) |arm_gcc_path|
@@ -90,37 +89,46 @@ pub fn build(b: *std.Build) void {
         .sanitize_c = if (optimization == .ReleaseSafe) true else false,
     });
 
-    const hal_includes = [_][]const u8{ "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };
-    const hal_sources = [_][]const u8{
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c",
-        "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c",
+    const hal_includes = [_][]const u8{
+        "Drivers/STM32L4xx_HAL_Driver/Inc",
+        "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+        "Drivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "Drivers/CMSIS/Include",
+        "Core/Inc",
     };
-    const hal_flags = [_][]const u8{ c_optimization, "-std=gnu17", "-Wall", "-Wextra" };
 
     for (hal_includes) |path| {
         hal_mod.addIncludePath(b.path(path));
     }
 
     hal_mod.addCSourceFiles(.{
-        .files = &hal_sources,
-        .flags = &hal_flags,
+        .files = &.{
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c",
+            "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c",
+        },
+        .flags = &.{
+            c_optimization,
+            "-std=gnu17",
+            "-Wall",
+            "-Wextra",
+        },
     });
 
     exe_mod.addImport("HAL library", hal_mod);
@@ -128,25 +136,33 @@ pub fn build(b: *std.Build) void {
     hal_mod.addCMacro("STM32L476xx", "");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const app_sources = [_][]const u8{
-        "Core/Src/main.c",
-        "Core/Src/gpio.c",
-        "Core/Src/usart.c",
-        "Core/Src/stm32l4xx_it.c",
-        "Core/Src/stm32l4xx_hal_msp.c",
-        "Core/Src/system_stm32l4xx.c",
-        "Core/Src/sysmem.c",
-        "Core/Src/syscalls.c",
-    };
-
-    const app_flags = [_][]const u8{ c_optimization, "-std=gnu17", "-Wall", "-Wextra" };
 
     exe_mod.addCSourceFiles(.{
-        .files = &app_sources,
-        .flags = &app_flags,
+        .files = &.{
+            "Core/Src/main.c",
+            "Core/Src/gpio.c",
+            "Core/Src/usart.c",
+            "Core/Src/stm32l4xx_it.c",
+            "Core/Src/stm32l4xx_hal_msp.c",
+            "Core/Src/system_stm32l4xx.c",
+            "Core/Src/sysmem.c",
+            "Core/Src/syscalls.c",
+        },
+        .flags = &.{
+            c_optimization,
+            "-std=gnu17",
+            "-Wall",
+            "-Wextra",
+        },
     });
 
-    const app_includes = [_][]const u8{ "Drivers/STM32L4xx_HAL_Driver/Inc", "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy", "Drivers/CMSIS/Device/ST/STM32L4xx/Include", "Drivers/CMSIS/Include", "Core/Inc" };
+    const app_includes = [_][]const u8{
+        "Drivers/STM32L4xx_HAL_Driver/Inc",
+        "Drivers/STM32L4xx_HAL_Driver/Inc/Legacy",
+        "Drivers/CMSIS/Device/ST/STM32L4xx/Include",
+        "Drivers/CMSIS/Include",
+        "Core/Inc",
+    };
     for (app_includes) |path| {
         exe_mod.addIncludePath(b.path(path));
     }
@@ -195,7 +211,7 @@ pub fn build(b: *std.Build) void {
     b.getInstallStep().dependOn(&copy_hex.step);
 
     //Add st-flash command (https://github.com/stlink-org/stlink)
-    const flash_cmd = b.addSystemCommand(&[_][]const u8{
+    const flash_stlink = b.addSystemCommand(&[_][]const u8{
         "st-flash",
         "--reset",
         "--freq=4000k",
@@ -204,9 +220,25 @@ pub fn build(b: *std.Build) void {
         "zig-out/bin/" ++ exe_name ++ ".hex",
     });
 
-    flash_cmd.step.dependOn(&bin.step);
+    flash_stlink.step.dependOn(&bin.step);
     const flash_step = b.step("flash", "Flash and run the firmware");
-    flash_step.dependOn(&flash_cmd.step);
+    flash_step.dependOn(&flash_stlink.step);
+
+    const flash_openocd = b.addSystemCommand(&[_][]const u8{
+        "openocd",
+        "-c",
+        "adapter speed 4000",
+        "-f",
+        "interface/stlink.cfg",
+        "-f",
+        "target/stm32l4x.cfg",
+        "-c",
+        "program zig-out/bin/" ++ exe_name ++ ".elf verify reset exit",
+    });
+
+    flash_openocd.step.dependOn(&bin.step);
+    const flash_step_openocd = b.step("flash_openocd", "Flash and run the firmware");
+    flash_step_openocd.dependOn(&flash_openocd.step);
 
     const clean_step = b.step("clean", "Remove .zig-cache");
     clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.install_path }).step);

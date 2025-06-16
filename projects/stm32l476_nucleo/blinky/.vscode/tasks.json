@@ -126,16 +126,10 @@
                     "color": "#48c548",
                     "label": "$(gear) Small"
                 }
-            },
-            "isBackground": true,
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
             }
         },
         {
-            "label": "$(chip) Flash chip",
+            "label": "$(chip) Flash (stlink)",
             "type": "shell",
             "linux": {
                 "command": "zig build flash",
@@ -150,7 +144,32 @@
                 "cwd": "${workspaceRoot}/",
                 "statusbar": {
                     "color": "#dfdc2f",
-                    "label": "$(chip) Flash chip"
+                    "label": "$(chip) Flash (stlink)"
+                }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "$(chip) Flash (openocd)",
+            "type": "shell",
+            "linux": {
+                "command": "zig build flash_openocd",
+            },
+            "osx": {
+                "command": "zig build flash_openocd",
+            },
+            "windows": {
+                "command": "zig build flash_openocd",
+            },
+            "options": {
+                "cwd": "${workspaceRoot}/",
+                "statusbar": {
+                    "color": "#e9e626",
+                    "label": "$(chip) Flash (openocd)"
                 }
             },
             "problemMatcher": [],

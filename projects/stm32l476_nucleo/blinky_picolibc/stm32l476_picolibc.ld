@@ -44,4 +44,5 @@ SECTIONS
 vfprintf = __m_vfprintf; /*disable*/
 vfscanf = __m_vfscanf; /*disable*/
 
+/* Relative path because of an [issue](https://github.com/ziglang/zig/issues/23111) */
 INCLUDE ../../../libraries/picolibc/thumbv7e+fp/lib/picolibc.ld

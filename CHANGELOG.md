@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - VSCode tasks for small and fast releases.
 - `build.zig.zon` for all examples.
 - Add a CI workflow and script to build all projects.
+- Add OpenOCD flash operation
 
 ### Changed
 
