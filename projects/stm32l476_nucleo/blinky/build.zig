@@ -184,12 +184,13 @@ pub fn build(b: *std.Build) void {
     const size_prog: ?[]const u8 = b.findProgram(&.{"arm-none-eabi-size"}, &.{}) catch
         b.findProgram(&.{"llvm-size"}, &.{}) catch null;
     if (size_prog) |name| {
-        const objsize = b.addSystemCommand(&[_][]const u8{
+        const size_run = b.addSystemCommand(&[_][]const u8{
             name,
             "zig-out/bin/" ++ exe_name ++ ".elf",
         });
-        objsize.step.dependOn(&elf.step);
-        b.getInstallStep().dependOn(&objsize.step);
+        const elf_install = b.addInstallArtifact(elf, .{});
+        size_run.step.dependOn(&elf_install.step);
+        b.getInstallStep().dependOn(&size_run.step);
     } else {
         std.log.warn("Could not find arm-none-eabi-size or llvm-size, skipping size step", .{});
     }

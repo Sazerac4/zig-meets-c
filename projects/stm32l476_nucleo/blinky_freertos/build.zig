@@ -261,12 +261,13 @@ pub fn build(b: *std.Build) void {
     const size_prog: ?[]const u8 = b.findProgram(&.{"arm-none-eabi-size"}, &.{}) catch
         b.findProgram(&.{"llvm-size"}, &.{}) catch null;
     if (size_prog) |name| {
-        const objsize = b.addSystemCommand(&[_][]const u8{
+        const size_run = b.addSystemCommand(&[_][]const u8{
             name,
             "zig-out/bin/" ++ exe_name ++ ".elf",
         });
-        objsize.step.dependOn(&elf.step);
-        b.getInstallStep().dependOn(&objsize.step);
+        const elf_install = b.addInstallArtifact(elf, .{});
+        size_run.step.dependOn(&elf_install.step);
+        b.getInstallStep().dependOn(&size_run.step);
     } else {
         std.log.warn("Could not find arm-none-eabi-size or llvm-size, skipping size step", .{});
     }
@@ -298,7 +299,7 @@ pub fn build(b: *std.Build) void {
     });
 
     flash_stlink.step.dependOn(&bin.step);
-    const flash_step = b.step("flash", "Flash and run the firmware");
+    const flash_step = b.step("flash", "Flash and run the firmware (stlink)");
     flash_step.dependOn(&flash_stlink.step);
 
     const flash_openocd = b.addSystemCommand(&[_][]const u8{
@@ -314,7 +315,7 @@ pub fn build(b: *std.Build) void {
     });
 
     flash_openocd.step.dependOn(&bin.step);
-    const flash_step_openocd = b.step("flash_openocd", "Flash and run the firmware");
+    const flash_step_openocd = b.step("flash_openocd", "Flash and run the firmware (openocd)");
     flash_step_openocd.dependOn(&flash_openocd.step);
 
     const clean_step = b.step("clean", "Remove .zig-cache");
