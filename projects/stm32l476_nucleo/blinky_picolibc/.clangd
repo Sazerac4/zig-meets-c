@@ -1,11 +1,31 @@
+# Clangd daemon arguments needed before Clangd-21
+#        "--query-driver=/opt/bin/arm-none-eabi-gcc",
+#        "--header-insertion=never",
+
 CompileFlags:
-  Add: [ ]
-  Compiler: /opt/bin/arm-none-eabi-gcc   # Change argv[0] of compile flags
+  CompilationDatabase : "./zig-out/"
+  # BuiltinHeaders: QueryDriver # Clangd-21
 
-Hover:
-  ShowAKA: No
+Completion:
 
-If:   # Apply this config conditionally
-  PathMatch: [Drivers/.*,Middlewares/.*]
+  AllScopes: Yes
+  ArgumentLists: FullPlaceholders
+  # HeaderInsertion : Never # Clangd-21
+  # CodePatterns: All # Clangd-21
+
+---
+
+If:
+  PathMatch: [Drivers/.*]
 Diagnostics:
   Suppress: '*'
+
+---
+
+If:
+  PathMatch: [Drivers/.*,Core/.*]
+Diagnostics:
+  ClangTidy:
+    Remove:
+      - readability-*
+

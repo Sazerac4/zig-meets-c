@@ -15,6 +15,8 @@
     - [Running Tests with the Repository Container](#running-tests-with-the-repository-container)
     - [Testing GitHub Workflows Locally with Act](#testing-github-workflows-locally-with-act)
       - [Using Act with Podman on Linux](#using-act-with-podman-on-linux)
+  - [Clang tooling](#clang-tooling)
+    - [Style and formatting](#style-and-formatting)
   - [Resources](#resources)
 
 
@@ -123,7 +125,7 @@ podman build -f ContainerFile --tag=zig_and_c:0.14.1 .
 #Run a container
 podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.14.1
 # Navigate to a project (example blinky)
-cd stm32l476_nucleo/blinky
+cd projects/stm32l476_nucleo/blinky
 # Build the firmware
 zig build
 # Flash the device (Linux only)
@@ -194,6 +196,31 @@ loginctl enable-linger $(whoami)
 3. Reload your shell configuration:
 ```bash
 source ~/.bashrc
+```
+
+## Clang tooling
+
+For C/C++ development, projects leverages Clang-based tooling, with configurations defined in:  
+- **`.clang-format`** (code style formatting)  
+- **`.clang-tidy`** (static analysis and linting)  
+- **`.clangd`** (IDE smart features like autocompletion and diagnostics)  
+
+### Style and formatting
+
+1. Generated from: `clang-format --style=llvm --dump-config > .clang-format`
+2. Parameters to change to correspond to Zig formatting:
+
+```
+SortIncludes:    false
+IndentWidth:     4
+ColumnLimit:     120
+AllowShortFunctionsOnASingleLine: None
+```
+
+__Example__ 
+
+```bash
+find ./ -name '*.c' -o  -name '*.h'| xargs clang-format -style=file -i --verbose
 ```
 
 ## Resources
