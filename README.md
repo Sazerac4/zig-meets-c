@@ -15,6 +15,8 @@
     - [Running Tests with the Repository Container](#running-tests-with-the-repository-container)
     - [Testing GitHub Workflows Locally with Act](#testing-github-workflows-locally-with-act)
       - [Using Act with Podman on Linux](#using-act-with-podman-on-linux)
+  - [Clang tooling](#clang-tooling)
+    - [Style and formatting](#style-and-formatting)
   - [Resources](#resources)
 
 
@@ -68,7 +70,7 @@ List of tools that is used around examples
 | Arm GNU Toolchain | `14.2.1`  | Tools for C development (gdb, binutils) and libc                        |
 | LLVM+Clang        | `19.1.7`  | Tools for C development (clang-format, clang-tidy, clangd)              |
 | ST link           | `v1.8.0`  | For flashing firmware                                                   |
-| OpenOCD           | `v0.12.0` | To provide debugging                                                    |
+| OpenOCD           | `v0.12.0` | Provides debugging and flashing capabilities.                           |
 | STM32CubeMX       | `6.14.1`  | For the generation of the corresponding initialization C code for STM32 |
 
 
@@ -115,7 +117,7 @@ For Vs Code users, Information available in this [document](docs/vscode.md) for 
 ### Containers (Podman or Docker)
 
 Instead of installing the various tools in your system, you can use containers to build or flash the firmware.
-Two technologies exist, both CLI APIs are mostly compatible: Docker and Podman. I use `podman` for my examples, but you can simply replace it with `docker` if you prefer.
+Two technologies exist, both CLI APIs are mostly compatible: **Docker** and **Podman**. I use `podman` for my examples, but you can simply replace it with `docker` if you prefer.
 
 ```bash
 #Create the image
@@ -123,7 +125,7 @@ podman build -f ContainerFile --tag=zig_and_c:0.14.1 .
 #Run a container
 podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.14.1
 # Navigate to a project (example blinky)
-cd stm32l476_nucleo/blinky
+cd projects/stm32l476_nucleo/blinky
 # Build the firmware
 zig build
 # Flash the device (Linux only)
@@ -194,6 +196,31 @@ loginctl enable-linger $(whoami)
 3. Reload your shell configuration:
 ```bash
 source ~/.bashrc
+```
+
+## Clang tooling
+
+For C/C++ development, projects leverages Clang-based tooling, with configurations defined in:  
+- **`.clang-format`** (code style formatting)  
+- **`.clang-tidy`** (static analysis and linting)  
+- **`.clangd`** (IDE smart features like autocompletion and diagnostics)  
+
+### Style and formatting
+
+1. Generated from: `clang-format --style=llvm --dump-config > .clang-format`
+2. Parameters to change to correspond to Zig formatting:
+
+```
+SortIncludes:    false
+IndentWidth:     4
+ColumnLimit:     120
+AllowShortFunctionsOnASingleLine: None
+```
+
+- Example: Command to format all C source files.
+
+```bash
+find ./ -name '*.c' -o  -name '*.h'| xargs clang-format -style=file -i --verbose
 ```
 
 ## Resources

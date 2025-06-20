@@ -222,8 +222,7 @@ const pFunc __interrupt_vector[] __attribute__((section(".text.init.enter"))) = 
 /*----------------------------------------------------------------------------
   Default Handler for Exceptions / Interrupts
  *----------------------------------------------------------------------------*/
-void Default_Handler(void)
-{
+void Default_Handler(void) {
     while (1)
         ;
 }

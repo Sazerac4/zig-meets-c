@@ -8,10 +8,12 @@ for project in \
     "projects/stm32l476_nucleo/blinky_freertos" \
     "projects/stm32l476_nucleo/blinky_picolibc"
 do
-    cd "${project}" || exit 1
-    zig build || exit 1
-    zig build --release=safe || exit 1
-    zig build --release=small || exit 1
-    zig build --release=fast || exit 1
+    cd "${project}"
+    #If you use local container to build, delete the current cache.
+    rm -rf -- ./.zig-cache 
+    zig build
+    zig build --release=safe 
+    zig build --release=small
+    zig build --release=fast
     cd - >/dev/null
 done
