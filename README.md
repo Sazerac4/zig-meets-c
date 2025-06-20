@@ -117,7 +117,7 @@ For Vs Code users, Information available in this [document](docs/vscode.md) for 
 ### Containers (Podman or Docker)
 
 Instead of installing the various tools in your system, you can use containers to build or flash the firmware.
-Two technologies exist, both CLI APIs are mostly compatible: Docker and Podman. I use `podman` for my examples, but you can simply replace it with `docker` if you prefer.
+Two technologies exist, both CLI APIs are mostly compatible: **Docker** and **Podman**. I use `podman` for my examples, but you can simply replace it with `docker` if you prefer.
 
 ```bash
 #Create the image
@@ -217,7 +217,7 @@ ColumnLimit:     120
 AllowShortFunctionsOnASingleLine: None
 ```
 
-__Example__ 
+- Example: Command to format all C source files.
 
 ```bash
 find ./ -name '*.c' -o  -name '*.h'| xargs clang-format -style=file -i --verbose
