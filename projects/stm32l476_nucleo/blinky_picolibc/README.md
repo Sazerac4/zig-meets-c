@@ -22,7 +22,7 @@ To use Zig in any microcontrollers `STM32CubeMX` generated project, with picolib
     ```
 
 3. **Create the linker script** (`stm32l476rgtx_flash.ld`). This is a picolibc template that needs to be adjusted for your specific microcontrollers (e.g., RAM size, flash size, and additional sections).
-4. **Copy the `libc` folder** or generate the `libc` files. Refer to the [Picolibc build](../../../library/picolibc/README.md) file for detailed instructions. Warning: You need to rebuild the libc if the target parameters are different (e.g., float support, Cortex-M).
+4. **Copy the `libc` folder** or generate the `libc` files. Refer to the [Picolibc build](../../../libraries/picolibc/README.md) file for detailed instructions. Warning: You need to rebuild the libc if the target parameters are different (e.g., float support, Cortex-M).
 5. **Create a `main.zig` file** with a custom entry point, such as `zigEntrypoint`.
 6. **Call the `zigEntrypoint` function** from the `main` function located in the `Core/Src/main.c` file.
 

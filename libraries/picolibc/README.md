@@ -117,7 +117,7 @@ Target linker script now can just specify flash memory option, extra section and
 I created my own startup file `vector_table.zig` with modifications for picolibc integration. You can see the assembler and C implementations under the folder `vector_table_examples`. Here is what needs to be changed from the original file `startup_stm32l476xx.s`:
 
 1. Rename `g_pfnVectors` to `__interrupt_vector`. The reference can be used by picolibc
-2. Rename `isr_vector` section to `.text.init.enter`
+2. Rename `.isr_vector` section to `.text.init.enter`
 3. Rename stack start  `_estack`  by `__stack`
 4. Rename the entrypoint  `Reset_Handler` to `_start` in the `__interrupt_vector` table
 5. Remove the `Reset_Handler` and `LoopForever` function.

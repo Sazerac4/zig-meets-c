@@ -18,13 +18,13 @@ RUN cd /tmp && curl -L -o arm-none-eabi-gcc.tar.gz https://github.com/xpack-dev-
 #Install Zig
 ARG ZIG_VERSION="0.14.1"
 RUN cd /tmp && curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz \
-    &&  tar -xf zig.tar.xz -C /opt/tools/  \
-    &&  ln -s /opt/tools/zig-x86_64-linux-*/zig /usr/local/bin/
+    && tar -xf zig.tar.xz -C /opt/tools/ \
+    && ln -s /opt/tools/zig-x86_64-linux-*/zig /usr/local/bin/
 
 #Clean image
 RUN apt clean && rm -rf -- /var/lib/apt/lists/* && rm -rf -- /tmp/*
 
 WORKDIR /workspace
-VOLUME  /workspace
+VOLUME /workspace
 
 CMD [ "/bin/bash" ]

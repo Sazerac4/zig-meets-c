@@ -9,29 +9,37 @@ We use the latter for formatting (instead of `clangd`) because `clangd` ignores 
 
 ## Extensions
 
+### Mandatory
+
 - **`ziglang.vscode-zig`** to get Zig support
 
-<img src="images/vscode-zig.png" alt="drawing" width="60%"/>
+<img src="images/vscode-zig.png" alt="drawing" width="50%"/>
 
 - **`llvm-vs-code-extensions.vscode-clangd`** – A Clangd-based language server for C/C++ with code navigation, linting, and smart completion.
 
-<img src="images/vscode-clangd.png" alt="drawing" width="60%"/>
+<img src="images/vscode-clangd.png" alt="drawing" width="50%"/>
 
 - **`ebextensions.clang-format-2025`** – For code formatting (preferred over clangd to support `.clang-format-ignore` files).  
 
-<img src="images/vscode-clang-format.png" alt="drawing" width="60%"/>
+<img src="images/vscode-clang-format.png" alt="drawing" width="50%"/>
 
 - **`marus25.cortex-debug`** for debugging ARM Cortex-M targets.
 
-<img src="images/vscode-cortex-debug.png" alt="drawing" width="60%"/>
+<img src="images/vscode-cortex-debug.png" alt="drawing" width="50%"/>
+
+### Optional
 
 - **`actboy168.tasks`** to got quick shortcut of your tasks in your status bar
 
-<img src="images/vscode-tasks.png" alt="drawing" width="60%"/>
+<img src="images/vscode-tasks.png" alt="drawing" width="50%"/>
 
 Usage:
 
 <img src="images/vscode3.png" alt="drawing" width="70%"/>
+
+- ** `foxundermoon.shell-format` for automatically formatting shell scripts and Dockerfile
+
+<img src="images/vscode-shellformat.png" alt="drawing" width="50%"/>
 
 ## Settings
 
@@ -54,6 +62,10 @@ Configuration example
     "[cpp]": {
         "editor.defaultFormatter": "ebextensions.clang-format-2025"
     },
+    "[dockerfile]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+   "shellformat.flag": "-bn" //Issue with Dockerfile otherwise
 }
 ```
 
