@@ -30,7 +30,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
-        .sanitize_c = if (optimization == .ReleaseSafe) true else false,
+        .sanitize_c = .trap,
     });
 
     const elf = b.addExecutable(.{
@@ -87,7 +87,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
-        .sanitize_c = if (optimization == .ReleaseSafe) true else false,
+        .sanitize_c = .trap,
     });
 
     const hal_includes = [_][]const u8{
@@ -148,7 +148,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
-        .sanitize_c = if (optimization == .ReleaseSafe) true else false,
+        .sanitize_c = .trap,
     });
 
     const os_includes = [_][]const u8{

@@ -2,7 +2,7 @@
 
 - [Zig Meets C: Cross-Language Development for Embedded Microcontrollers](#zig-meets-c-cross-language-development-for-embedded-microcontrollers)
   - [Description](#description)
-  - [Embedded Related Point](#embedded-related-point)
+  - [Limitations](#limitations)
   - [Examples List](#examples-list)
   - [Installation](#installation)
     - [Linux](#linux)
@@ -33,14 +33,13 @@ This repository explores the integration of Zig into microcontroller development
 
 This is a work in progress, and help is welcome to add more examples, improve documentation, or provide corrections.
 
-## Embedded Related Point 
+## Limitations
 
-- Using the libc with C code is currently a workaround, and Zig code will ignore it for now. (Planned for 0.15.0. [Issue](https://github.com/ziglang/zig/issues/20327))
-- JSON Compilation Database, which is used with many C tools (e.g., linters, LSPs, IDE,etc.), not yet supported. (Planned for 0.15.0. [PR](https://github.com/ziglang/zig/pull/22012)).  
+- Using the libc with C code is currently a workaround, and Zig code will ignore it for now. ([Issue](https://github.com/ziglang/zig/issues/20327))
+- JSON Compilation Database, which is used with many C tools (e.g., linters, LSPs, IDE,etc.), not yet supported. ([PR](https://github.com/ziglang/zig/pull/22012)).  
 - `@cImport` is planned to work differently in the future. For more details, see this [Zig issue](https://github.com/ziglang/zig/issues/20630).
 - [Translate-C](https://github.com/ziglang/zig/labels/translate-c) command (and `@cImport`) has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files. (Work in Progress)
 - `Debug` Release mode without `-Og` optimization level can make binary too huge to fit in a device. However, the Clang documentation says `-Og Like -O1. In future versions, this option might disable different optimizations in order to improve debuggability.`, which could imply that the debugging experience may be less effective than with GCC.
-- No option to have ubsan with trap instead of runtime. It will increase the binary size if not disable (Planned for 0.15.0.[Issue](https://github.com/ziglang/zig/issues/23216))
 - Set `want_lto` to true can cause startup functions, vector_table and others symbols to be dropped, even if they are exported or used. ([Issue](https://github.com/ziglang/zig/issues/9844). Problem present with 0.14 releases)
 - Regression with finding linker scripts during cross-compilation ([Issue](https://github.com/ziglang/zig/issues/23111))
 
@@ -66,7 +65,7 @@ List of tools that is used around examples
 
 | Name              | Version   | Description                                                             |
 | :---------------- | --------- | :---------------------------------------------------------------------- |
-| Zig               | `0.14.1`  | For compiling C and Zig code                                            |
+| Zig               | `0.15.1`  | For compiling C and Zig code                                            |
 | ZLS               | `0.14.0`  | Language Server Protocol for Zig                                        |
 | Arm GNU Toolchain | `14.2.1`  | Tools for C development (gdb, binutils) and libc                        |
 | LLVM+Clang        | `19.1.7`  | Tools for C development (clang-format, clang-tidy, clangd)              |
@@ -95,7 +94,7 @@ cd /tmp && wget https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/relea
     && ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-*  ~/.local/bin
 
 #Install Zig
-ZIG_VERSION="0.14.1"
+ZIG_VERSION="0.15.1"
 cd /tmp && wget https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz && \
     tar -xf /tmp/zig-x86_64-linux-*.tar.xz -C /opt/tools/ && \
     ln -s /opt/tools/zig-x86_64-linux-*/zig ~/.local/bin
@@ -122,9 +121,9 @@ Two technologies exist, both CLI APIs are mostly compatible: **Docker** and **Po
 
 ```bash
 #Create the image
-podman build -f ContainerFile --tag=zig_and_c:0.14.1 .
+podman build -f ContainerFile --tag=zig_and_c:0.15.1 .
 #Run a container
-podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.14.1
+podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.15.1
 # Navigate to a project (example blinky)
 cd projects/stm32l476_nucleo/blinky
 # Build the firmware
@@ -159,7 +158,7 @@ To execute tests using the project's container image:
 
 ```bash
 # Run tests in the container
-podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.14.1 sh ci/build-examples.sh
+podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.15.1 sh ci/build-examples.sh
 ```
 
 ### Testing GitHub Workflows Locally with Act

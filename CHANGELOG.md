@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Zig bump version to 0.15.1
+- `.trap` option used with `.sanitize_c` for smaller footprint
+
+## [0.14.1] - 2025-08-21
+
 ### Added
 
 - STM32F407 blinky example. Startup and vector table written in Zig.

@@ -16,7 +16,7 @@ RUN cd /tmp && curl -L -o arm-none-eabi-gcc.tar.gz https://github.com/xpack-dev-
     && ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-* /usr/local/bin/
 
 #Install Zig
-ARG ZIG_VERSION="0.14.1"
+ARG ZIG_VERSION="0.15.1"
 RUN cd /tmp && curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz \
     && tar -xf zig.tar.xz -C /opt/tools/ \
     && ln -s /opt/tools/zig-x86_64-linux-*/zig /usr/local/bin/
