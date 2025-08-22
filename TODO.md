@@ -8,7 +8,10 @@
 - [ ] Improve FreeRTOS example with an interface abstraction to avoid problems with macros translation.
 - [X] Add CI to compile every example.
 - [ ] Add different examples code (e.g:hello world with UART)
-- [ ] Add more target (nrf52, raspberry pi pico, esp32...)
 - [X] Custom Panic function to implement for runtime error (using UART interface)
 - [ ] Add Testing unit using Zig
 - [X] Update `.clang-format` to correspond to Zig style guide.
+- [ ] Test with arm gcc from offical website and from packaging system (fedora and debian) 
+- [ ] Add NRF52 target. nrf-connect sdk (It use Zephyr)
+- [ ] Add ESP32 target. Start with RISC-V target only with esp-idf sdk 
+- [ ] Add PI pico target. It is use pico-sdk and picotools. Found an implementation strategy effortless.

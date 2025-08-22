@@ -20,7 +20,7 @@ pub const panic = std.debug.FullPanic(myPanic);
 
 fn myPanic(msg: []const u8, first_trace_addr: ?usize) noreturn {
     // `_disable_irq()` is demoted to extern but don't work. Maybe because it is was a "static inline" function. Need investigation
-    asm volatile ("cpsid i" ::: "memory");
+    asm volatile ("cpsid i" ::: .{ .memory = true });
 
     //Start printing, ensure error is impossible or ignore it. We are already on an error state.
     var buffer: [1024]u8 = undefined;
