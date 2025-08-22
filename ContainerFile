@@ -1,4 +1,4 @@
-FROM debian:12
+FROM debian:13
 LABEL description "Build zig examples" \
     maintainer="Sazerac4 <lm-embeddedsystems@laposte.net>"
 

@@ -1,11 +1,12 @@
 # Meson settings to compile picolibc with clang.
 [binaries]
-c = ['clang-19', '-m32', '-target', 'thumb-freestanding-eabihf', '-mcpu=cortex-m4', '-mfloat-abi=hard', '-mfpu=fpv4-sp-d16', '-nostdlib']
-cpp = ['clang-19', '-m32', '-target', 'thumb-freestanding-eabihf', '-mcpu=cortex-m4', '-mfloat-abi=hard', '-mfpu=fpv4-sp-d16', '-nostdlib']
-as = ['clang-19', '-m32', '-target', 'thumb-freestanding-eabihf', '-mcpu=cortex-m4', '-mfloat-abi=hard', '-mfpu=fpv4-sp-d16', '-nostdlib']
-ar = 'llvm-ar-19'
-nm = 'llvm-nm-19'
-strip = 'llvm-strip-19'
+c = ['clang', '-m32', '-target', 'thumb-freestanding-eabihf', '-mcpu=cortex-m4', '-mfloat-abi=hard', '-mfpu=fpv4-sp-d16', '-nostdlib']
+cpp = ['clang', '-m32', '-target', 'thumb-freestanding-eabihf', '-mcpu=cortex-m4', '-mfloat-abi=hard', '-mfpu=fpv4-sp-d16', '-nostdlib']
+as = ['clang', '-m32', '-target', 'thumb-freestanding-eabihf', '-mcpu=cortex-m4', '-mfloat-abi=hard', '-mfpu=fpv4-sp-d16', '-nostdlib']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+ld = 'lld'
 
 [host_machine]
 system = 'none'
