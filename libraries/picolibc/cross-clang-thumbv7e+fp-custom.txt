@@ -16,8 +16,8 @@ endian = 'little'
 
 [built-in options]
 c_args = [ '-Werror=double-promotion', '-Wno-unsupported-floating-point-opt', '-fshort-enums']
-c_link_args = [ '-Wl,-z,noexecstack', '-Wno-unused-command-line-argument']
-cpp_link_args = [ '-Wl,-z,noexecstack', '-Wno-unused-command-line-argument']
+c_link_args = [ '-fuse-ld=lld', '-Wl,-z,noexecstack', '-Wno-unused-command-line-argument']
+cpp_link_args = [ '-fuse-ld=lld', '-Wl,-z,noexecstack', '-Wno-unused-command-line-argument']
 
 # Default flash and RAM information (all values are set to zero to force the user to configure them).
 [properties]

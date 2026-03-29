@@ -1,20 +1,16 @@
-FROM debian:13
+FROM fedora:43
 LABEL description "Build Picolibc" \
     maintainer="Sazerac4 <lm-embeddedsystems@laposte.net>"
 
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt update --fix-missing && apt upgrade -y
-
 #Install tools
-RUN apt install --no-install-recommends -y ca-certificates wget unzip meson ninja-build llvm clang lld
+RUN yum install --setopt=install_weak_deps=False -y git unzip meson ninja-build llvm clang lld \
+    && yum clean all && rm -rf -- /var/cache/yum
 
 #Download picolibc
-ARG PICOLIBC_VERSION="1.8.10"
-RUN cd /tmp && wget https://github.com/picolibc/picolibc/archive/refs/tags/${PICOLIBC_VERSION}.zip \
-    && unzip /tmp/${PICOLIBC_VERSION}.zip && mv /tmp/picolibc-${PICOLIBC_VERSION} /picolibc
-
-#Clean image
-RUN apt clean && rm -rf -- /var/lib/apt/lists/* && rm -rf -- /tmp/*
+ARG PICOLIBC_VERSION="1.8.11"
+RUN curl -L -o picolibc.zip https://github.com/picolibc/picolibc/archive/refs/tags/${PICOLIBC_VERSION}.zip \
+    && unzip picolibc.zip && mv picolibc-${PICOLIBC_VERSION} /picolibc \
+    && rm picolibc.zip
 
 WORKDIR /workspace
 VOLUME /workspace
