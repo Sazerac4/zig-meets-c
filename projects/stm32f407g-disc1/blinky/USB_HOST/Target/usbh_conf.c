@@ -220,6 +220,7 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost)
 
   USBH_LL_SetTimer(phost, HAL_HCD_GetCurrentFrame(&hhcd_USB_OTG_FS));
   }
+
   return USBH_OK;
 }
 
@@ -335,7 +336,7 @@ uint32_t USBH_LL_GetLastXferSize(USBH_HandleTypeDef *phost, uint8_t pipe)
 /**
   * @brief  Open a pipe of the low level driver.
   * @param  phost: Host handle
-  * @param  pipe_num: Pipe index
+  * @param  pipe: Pipe index
   * @param  epnum: Endpoint number
   * @param  dev_address: Device USB address
   * @param  speed: Device Speed
@@ -343,13 +344,18 @@ uint32_t USBH_LL_GetLastXferSize(USBH_HandleTypeDef *phost, uint8_t pipe)
   * @param  mps: Endpoint max packet size
   * @retval USBH status
   */
-USBH_StatusTypeDef USBH_LL_OpenPipe(USBH_HandleTypeDef *phost, uint8_t pipe_num, uint8_t epnum,
-                                    uint8_t dev_address, uint8_t speed, uint8_t ep_type, uint16_t mps)
+USBH_StatusTypeDef USBH_LL_OpenPipe(USBH_HandleTypeDef *phost,
+                                    uint8_t pipe,
+                                    uint8_t epnum,
+                                    uint8_t dev_address,
+                                    uint8_t speed,
+                                    uint8_t ep_type,
+                                    uint16_t mps)
 {
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 
-  hal_status = HAL_HCD_HC_Init(phost->pData, pipe_num, epnum,
+  hal_status = HAL_HCD_HC_Init(phost->pData, pipe, epnum,
                                dev_address, speed, ep_type, mps);
 
   usb_status = USBH_Get_USB_Status(hal_status);
@@ -365,14 +371,27 @@ USBH_StatusTypeDef USBH_LL_OpenPipe(USBH_HandleTypeDef *phost, uint8_t pipe_num,
   */
 USBH_StatusTypeDef USBH_LL_ClosePipe(USBH_HandleTypeDef *phost, uint8_t pipe)
 {
-  HAL_StatusTypeDef hal_status = HAL_OK;
-  USBH_StatusTypeDef usb_status = USBH_OK;
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(phost);
+  UNUSED(pipe);
 
-  hal_status = HAL_HCD_HC_Halt(phost->pData, pipe);
+  return USBH_OK;
+}
 
-  usb_status = USBH_Get_USB_Status(hal_status);
+/**
+  * @brief  USBH_LL_ActivatePipe
+  *         Activate a pipe of the Low Level Driver.
+  * @param  phost: Host handle
+  * @param  pipe: Pipe index
+  * @retval USBH Status
+  */
+USBH_StatusTypeDef USBH_LL_ActivatePipe(USBH_HandleTypeDef *phost, uint8_t pipe)
+{
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(phost);
+  UNUSED(pipe);
 
-  return usb_status;
+  return USBH_OK;
 }
 
 /**
