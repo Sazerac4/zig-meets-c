@@ -13,7 +13,7 @@
                 "command": "rm -rf -- ./.zig-cache",
             },
             "windows": {
-                "command": "Remove-Item -Recurse -Force ./.zig-cache",
+                "command": "Remove-Item -Recurse -Force ./.zig-cache -ErrorAction SilentlyContinue",
             },
             "options": {
                 "cwd": "${workspaceRoot}",

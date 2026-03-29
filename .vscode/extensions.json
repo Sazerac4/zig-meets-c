@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "mads-hartmann.bash-ide-vscode",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "twxs.cmake",
+        "ZixuanWang.linkerscript",
+        "marus25.cortex-debug",
+        "actboy168.tasks",
+        "EditorConfig.EditorConfig"
+    ]
+}

@@ -10,9 +10,9 @@ for project in \
 do
     cd "${project}"
     #If you use local container to build, delete the current cache.
-    rm -rf -- ./.zig-cache 
+    rm -rf -- ./.zig-cache
     zig build
-    zig build --release=safe 
+    zig build --release=safe
     zig build --release=small
     zig build --release=fast
     cd - >/dev/null
