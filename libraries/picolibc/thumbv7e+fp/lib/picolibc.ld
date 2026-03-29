@@ -53,6 +53,7 @@ MEMORY
 PHDRS
 {
 	text PT_LOAD;
+	rodata PT_LOAD;
 	ram_init PT_LOAD;
 	ram PT_LOAD;
 	tls PT_TLS;
@@ -106,6 +107,30 @@ SECTIONS
 
 	} >flash AT>flash :text
 
+#	/* additional sections when compiling with C++ exception support */
+#	.except_ordered : {
+#		*(.gcc_except_table *.gcc_except_table.*)
+#		*(.ARM.extab* .gnu.linkonce.armextab.*)
+#	} >flash AT>flash :rodata
+#	.eh_frame_hdr : {
+#		PROVIDE_HIDDEN ( __eh_frame_hdr_start = . );
+#		*(.eh_frame_hdr) *(.eh_frame_entry .eh_frame_entry.*)
+#		PROVIDE_HIDDEN ( __eh_frame_hdr_end = . );
+#	} >flash AT>flash :rodata
+#	.eh_frame : {
+#		PROVIDE_HIDDEN ( __eh_frame_start = . );
+#		KEEP (*(.eh_frame .eh_frame.*))
+#		PROVIDE_HIDDEN ( __eh_frame_end = . );
+#	} >flash AT>flash :rodata
+#
+#	.except_unordered : {
+#		. = ALIGN(8);
+#
+#		PROVIDE(__exidx_start = .);
+#		*(.ARM.exidx*)
+#		PROVIDE(__exidx_end = .);
+#	} >flash AT>flash :rodata
+
 	.rodata : {
 
 		/* read-only data */
@@ -119,7 +144,8 @@ SECTIONS
 		*(.srodata.cst2)
 		*(.srodata .srodata.*)
 
-	} >flash AT>flash :text
+	} >flash AT>flash :rodata
+
 	PROVIDE(_pid_base = ADDR(.rodata));
 
 	.data.rel.ro : {
@@ -127,23 +153,42 @@ SECTIONS
 		/* data that needs relocating */
 		*(.data.rel.ro .data.rel.ro.*)
 
-	} >flash AT>flash :text
+	} >flash AT>flash :rodata
 
-	/*
-	 * Procedure linkage table. This ends up
-	 * with an array of structs containing pointers
-	 * to the function descriptors and iplt references
-	 * that need to contain them after startup.
-	 */
-	/* For ld.bfd: 
-	.plt : {
-		*(.rela.iplt)
-		*(.rela.*)
-	} >flash AT>flash :text
+#	/* TLS data when stored in separately allocate tls_space section */
+#	.tdata :
+# 		ALIGN(__tls_align)
+#	{
+#		PROVIDE( __tls_first = . );
+#		*(.tdata .tdata.* .gnu.linkonce.td.*)
+#		PROVIDE( __tdata_end = . );
+#	} >flash :tls :rodata
+#
+#	/* lld allocates flash space for this section; it would
+#	 * be nice to fix that. */
+#	.tbss (NOLOAD) : {
+#		*(.tbss .tbss.* .gnu.linkonce.tb.*)
+#		*(.tcommon)
+#		PROVIDE( __tls_end = . );
+#		PROVIDE( __tbss_end = . );
+#	} >flash :tls :rodata
+#
+#	PROVIDE( __tls_start = SIZEOF(.tdata) ? ADDR(.tdata) : ADDR(.tbss) );
+#	PROVIDE( __tls_space_size = __tls_end - __tls_start );
 
-	PROVIDE( __plt_start = ADDR(.plt) );
-	PROVIDE( __plt_size = SIZEOF(.plt) );
-	*/
+#	/*
+#	 * Procedure linkage table. This ends up
+#	 * with an array of structs containing pointers
+#	 * to the function descriptors and iplt references
+#	 * that need to contain them after startup.
+#	 */
+#	.plt : {
+#		*(.rela.iplt)
+#		*(.rela.*)
+#	} >flash AT>flash :rodata
+#
+#	PROVIDE( __plt_start = ADDR(.plt) );
+#	PROVIDE( __plt_size = SIZEOF(.plt) );
 
 	/*
 	 * Needs to be in its own segment with the PLT entries first
@@ -153,7 +198,7 @@ SECTIONS
 	.got : {
 		*(.got.plt)
 		*(.got)
-	} >flash AT>flash :text
+	} >flash AT>flash :rodata
 
 	.toc : {
 		*(.toc .toc.*)
@@ -163,33 +208,7 @@ SECTIONS
 		 * stick them in :ram
 		 */
 		*(.iplt .iplt.*)
-	} >flash AT>flash :text
-
-	/* additional sections when compiling with C++ exception support */
-	/*
-	.except_ordered : {
-		*(.gcc_except_table *.gcc_except_table.*)
-		*(.ARM.extab* .gnu.linkonce.armextab.*)
-	} >flash AT>flash :text
-	.eh_frame_hdr : {
-		PROVIDE_HIDDEN ( __eh_frame_hdr_start = . );
-		*(.eh_frame_hdr) *(.eh_frame_entry .eh_frame_entry.*)
-		PROVIDE_HIDDEN ( __eh_frame_hdr_end = . );
-	} >flash AT>flash :text
-	.eh_frame : {
-		PROVIDE_HIDDEN ( __eh_frame_start = . );
-		KEEP (*(.eh_frame .eh_frame.*))
-		PROVIDE_HIDDEN ( __eh_frame_end = . );
-	} >flash AT>flash :text
-
-	.except_unordered : {
-		. = ALIGN(8);
-
-		PROVIDE(__exidx_start = .);
-		*(.ARM.exidx*)
-		PROVIDE(__exidx_end = .);
-	} >flash AT>flash :text
-	*/
+	} >flash AT>flash :rodata
 
 	/*
 	 * Data values which are preserved across reset
@@ -201,7 +220,29 @@ SECTIONS
 		PROVIDE(__preserve_end__ = .);
 	} >ram AT>ram :ram
 
-	.data : /* For ld.bfd:  ALIGN_WITH_INPUT */ {
+#       PROVIDE( __tls_align = MAX(ALIGNOF(.tdata), ALIGNOF(.tbss)) );
+#	/* Pre-allocate space for an initial TLS area */
+#	.tls_space (NOLOAD) :
+# 		ALIGN(__tls_align)
+#        {
+#		PROVIDE( __tls_head_start = .);
+#		KEEP (*(.stack_chk .stack_chk.*))
+#		PROVIDE( __tls_head_end = .);
+#
+#		. = ALIGN(__tls_align);
+#		PROVIDE( __tls_space = .);
+#		. = . + __tls_space_size;
+#
+#		. = ALIGN(__tls_align);
+#		PROVIDE( __tls_tail_start = . );
+#		KEEP (*(.tls_tail_extra .tls_tail_extra.*))
+#		PROVIDE( __tls_tail_end = . );
+#
+#	} >ram AT>ram :ram
+
+	.data :
+#		ALIGN_WITH_INPUT
+	{
 		*(.data .data.* )
 		*(.gnu.linkonce.d.*)
 
@@ -212,6 +253,7 @@ SECTIONS
 		PROVIDE( _gp = . + 0x8000);
 		*(.sdata .sdata.* .sdata2.* )
 		*(.gnu.linkonce.s.*)
+
 		/*
 		 * Make sure there is space for PowerPC thread-local
 		 * stack-check value which lives before the thread
@@ -220,10 +262,14 @@ SECTIONS
 		 * offsets for it; in reality, it lives at a known
 		 * fixed offset outside of the usual TLS range
 		 */
-		PROVIDE( __stack_chk_start = .);
+		PROVIDE( __tls_head_start = .);
 		KEEP (*(.stack_chk .stack_chk.*))
-		PROVIDE( __stack_chk_end = .);
+		PROVIDE( __tls_head_end = .);
+
+#		PROVIDE( __data_end = . );
+
 	} >ram AT>flash :ram_init
+
 	PROVIDE(__data_start = ADDR(.data));
 	PROVIDE(__data_source = LOADADDR(.data));
 	PROVIDE(__x86_gdt_ro = DEFINED(__x86_gdt) ? __x86_gdt - __data_start + __data_source : 0);
@@ -240,23 +286,15 @@ SECTIONS
 	 * as it only guarantees usage as a TLS template works
 	 * rather than supporting this use case.
 	 */
-	.tdata :  ALIGN(__tls_align)  /* For ld.bfd:  ALIGN_WITH_INPUT */ {
+	.tdata :
+ 		ALIGN(__tls_align)
+ #		ALIGN_WITH_INPUT
+	{
+		PROVIDE( __tls_first = . );
 		*(.tdata .tdata.* .gnu.linkonce.td.*)
-		PROVIDE(__data_end = .);
-		PROVIDE(__tdata_end = .);
+		PROVIDE( __data_end = . );
+		PROVIDE( __tdata_end = . );
 	} >ram AT>flash :tls :ram_init
-	PROVIDE( __stack_chk_size = __stack_chk_end - __stack_chk_start );
-	PROVIDE( __tdata_start = ADDR(.tdata) - __stack_chk_size );
-	PROVIDE( __tdata_source = LOADADDR(.tdata) - __stack_chk_size );
-	PROVIDE( __tdata_source_end = LOADADDR(.tdata) + SIZEOF(.tdata) );
-	PROVIDE( __data_source_end = __tdata_source_end );
-	PROVIDE( __tdata_size = SIZEOF(.tdata) + __stack_chk_size );
-
-	PROVIDE( __edata = __data_end );
-	PROVIDE( _edata = __data_end );
-	PROVIDE( edata = __data_end );
-	PROVIDE( __data_size = __data_end - __data_start );
-	PROVIDE( __data_source_size = __data_source_end - __data_source );
 
 	.tbss (NOLOAD) : {
 		*(.tbss .tbss.* .gnu.linkonce.tb.*)
@@ -264,35 +302,41 @@ SECTIONS
 		PROVIDE( __tls_end = . );
 		PROVIDE( __tbss_end = . );
 	} >ram AT>ram :tls :ram
-	PROVIDE( __tls_first = SIZEOF(.tdata) ? ADDR(.tdata) : ADDR(.tbss) );
-	PROVIDE( __tls_base = __tls_first - __stack_chk_size );
-	PROVIDE( __bss_start = ADDR(.tbss));
-	PROVIDE( __tbss_start = ADDR(.tbss));
-	PROVIDE( __tbss_offset = ADDR(.tbss) - __tls_first );
-	PROVIDE( __tbss_size = SIZEOF(.tbss) );
-	PROVIDE( __tls_align = MAX(ALIGNOF(.tdata), ALIGNOF(.tbss)) );
-	PROVIDE( __tls_size = (__tls_tail_extra_size ? ALIGN(__tls_end, __tls_align) + __tls_tail_extra_size : __tls_end) - __tls_base );
-	PROVIDE( __tls_size_align = (__tls_size + __tls_align - 1) & ~(__tls_align - 1));
-	PROVIDE( __arm32_tls_tcb_offset = MAX(8, __tls_align) );
-	PROVIDE( __arm64_tls_tcb_offset = MAX(16, __tls_align) );
-	PROVIDE( __or1k_tls_tcb_offset = MAX(16, __tls_align) );
-	PROVIDE( __sh32_tls_tcb_offset = MAX(8, __tls_align) );
-	PROVIDE( __x86_tls_tcb = ALIGN(__tls_end, __tls_align) );
-	PROVIDE( __x86_tls_tcb_offset = __x86_tls_tcb - __tls_base );
 
-	/*
-	 * Unlike ld.lld, ld.bfd does not advance the location counter for
-	 * .tbss, but we actually need memory allocated for .tbss as we use
-	 * it for the initial TLS storage.
-	 * Create special section here just to make room.
-	 */
-        /* For ld.bfd: 
-        .tbss_space (NOLOAD) : {
-		. = ADDR(.tbss);
-		. = . + SIZEOF(.tbss);
-	} >ram AT>ram :ram
-	*/
+ #	/*
+ #	 * Unlike ld.lld, ld.bfd does not advance the location counter for
+ #	 * .tbss, but we actually need memory allocated for .tbss as we use
+ #	 * it for the initial TLS storage.
+ #	 * Create special section here just to make room.
+ #	 */
+ #
+ #	.tbss_space (NOLOAD) : {
+ #		. = ADDR(.tbss);
+ #		. = . + SIZEOF(.tbss);
+ #	} >ram AT>ram :ram
+
+	PROVIDE( __tls_start = SIZEOF(.tdata) ? ADDR(.tdata) : ADDR(.tbss) );
+
+	PROVIDE( __tls_align = MAX(ALIGNOF(.tdata), ALIGNOF(.tbss)) );
+	PROVIDE( __tls_head_size = ALIGN ( __tls_head_end - __tls_head_start, __tls_align ) );
+
+	PROVIDE( __tdata_start = ADDR(.tdata) - __tls_head_size );
+	PROVIDE( __tdata_source = LOADADDR(.tdata) - __tls_head_size );
+	PROVIDE( __tdata_source_end = LOADADDR(.tdata) + SIZEOF(.tdata) );
+	PROVIDE( __tdata_size = SIZEOF(.tdata) + __tls_head_size );
+
+	PROVIDE( __data_source_end = LOADADDR(.tdata) + SIZEOF(.tdata) );
+
+#	PROVIDE( __data_source_end = LOADADDR(.data) + SIZEOF (.data) );
+
+	PROVIDE( __edata = __data_end );
+	PROVIDE( _edata = __data_end );
+	PROVIDE( edata = __data_end );
+	PROVIDE( __data_size = __data_end - __data_start );
+	PROVIDE( __data_source_size = __data_source_end - __data_source );
+
 	.bss (NOLOAD) : {
+
 		/*
 		 * For the x86-32 and x86-64, we must further allocate extra
 		 * space for the thread control block -- at a minimum, the
@@ -306,11 +350,12 @@ SECTIONS
 		 * pointer (similar to OpenBSD's, https://man.openbsd.org/
 		 *__get_tcb.2).  __set_tcb() will be called by _set_tls().
 		 */
-		. = ALIGN(__tls_align);
-		PROVIDE( __tls_tail_extra_start = . );
+		. = ALIGN( __tls_align );
+		PROVIDE( __tls_tail_start = . );
 		KEEP (*(.tls_tail_extra .tls_tail_extra.*))
-		PROVIDE( __tls_tail_extra_end = . );
+		PROVIDE( __tls_tail_end = . );
 
+		/* this symbol is only used by test/tls.c */
 		PROVIDE( __non_tls_bss_start = . );
 		*(.sbss* )
 		*(.gnu.linkonce.sb.*)
@@ -321,22 +366,48 @@ SECTIONS
 		/* Align the heap */
 		. = ALIGN(8);
 		__bss_end = .;
+		_end = .;
 	} >ram AT>ram :ram
-	PROVIDE( __tls_tail_extra_size = __tls_tail_extra_end - __tls_tail_extra_start );
-	PROVIDE( __end = __bss_end );
-	_end = __bss_end;
-	PROVIDE( end = __bss_end );
+
+	PROVIDE( __tls_space_size = __tls_end - __tls_start );
+	PROVIDE( __tls_space = __tls_start );
+
+	PROVIDE( __bss_start = ADDR(.tbss) );
+
+#	PROVIDE( __bss_start = ADDR(.bss) );
+
+	PROVIDE( __tbss_start = ADDR(.tbss) );
+	PROVIDE( __tbss_offset = ADDR(.tbss) - __tls_start );
+	PROVIDE( __tbss_size = SIZEOF(.tbss) );
+	PROVIDE( __tls_space_pad = ALIGN ( __tls_space_size, __tls_align ) - __tls_space_size );
+	PROVIDE( __tls_tail_size = __tls_space_pad + (__tls_tail_end - __tls_tail_start) );
+
+	PROVIDE( __tls_size = __tls_head_size + __tls_space_size + __tls_tail_size );
+	PROVIDE( __tls_base = __tls_space - __tls_head_size );
+
+	PROVIDE( __arm32_tls_tcb_offset = MAX(8, __tls_align) );
+	PROVIDE( __arm64_tls_tcb_offset = MAX(16, __tls_align) );
+	PROVIDE( __or1k_tls_tcb_offset = MAX(16, __tls_align) );
+	PROVIDE( __sh32_tls_tcb_offset = MAX(8, __tls_align) );
+	PROVIDE( __arc_tls_tcb_offset = MAX(8, __tls_align) );
+	PROVIDE( __arc64_tls_tcb_offset = MAX(16, __tls_align) );
+
+	PROVIDE( __x86_tls_tcb = __tls_space + ALIGN( __tls_head_size + __tls_space_size, __tls_align ) );
+	PROVIDE( __x86_tls_tcb_offset = __x86_tls_tcb - __tls_base );
+
+	PROVIDE( __end = _end );
+	PROVIDE( end = _end );
 	PROVIDE( __bss_size = __bss_end - __bss_start );
 
 	/* Make the rest of memory available for heap storage */
-	PROVIDE (__heap_start = __end);
-	PROVIDE (__heap_end = __stack - (DEFINED(__stack_size) ? __stack_size : 0x00001000));
-	PROVIDE (__heap_size = __heap_end - __heap_start);
+	PROVIDE( __heap_start = __end );
+	PROVIDE( __heap_end = __stack - (DEFINED(__stack_size) ? __stack_size : 0x00001000) );
+	PROVIDE( __heap_size = __heap_end - __heap_start );
 
-        /* Allow a minimum heap size to be specified */
-        .heap (NOLOAD) : {
-                . += (DEFINED(__heap_size_min) ? __heap_size_min : 0);
-        } >ram :ram
+	/* Allow a minimum heap size to be specified */
+	.heap (NOLOAD) : {
+		. += (DEFINED(__heap_size_min) ? __heap_size_min : 0);
+	} >ram :ram
 
 	/* Define a stack region to make sure it fits in memory */
 	.stack (NOLOAD) : {
@@ -345,16 +416,12 @@ SECTIONS
 
 	/* Throw away C++ exception handling information */
 
-	
-
 	/DISCARD/ : {
 		*(.note .note.*)
 		*(.eh_frame .eh_frame.*)
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
 		*(.ARM.exidx*)
 	}
-
-	
 
 	/* Stabs debugging sections.  */
 	.stab          0 : { *(.stab) }
@@ -409,4 +476,4 @@ SECTIONS
  * padding, so that a single memcpy() of __data_size copies the correct bytes.
  */
 ASSERT( __data_size == __data_source_size,
-	"ERROR: .data/.tdata flash size does not match RAM size");
+    "ERROR: .data/.tdata flash size does not match RAM size");

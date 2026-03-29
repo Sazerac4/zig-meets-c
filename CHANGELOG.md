@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Zig bump version to 0.15.1
+- `docker` used as default command
+- Add missing `.editorconfig` files
+- Regenerate every file with recent STM32CubeMX
+- Container use `fedora:43` base image
+- gcc-arm-none-eabi source change to ARM provider version to 15.2-rel1
+- Picolibc bump version to 1.8.11
+- Zig bump version to 0.15.2
 - `.sanitize_c = .trap` used for all build type for smaller footprint
 
 ## [0.14.1] - 2025-08-21

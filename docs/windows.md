@@ -1,12 +1,14 @@
 # Windows requirements 
 
+* Warning: This is not fully updated or thoroughly tested.
+
 ## Tools
 
 1. Create a `tools` folder (example : `C:\tools` )
-2. Download [Zig](https://ziglang.org/download/0.14.1/zig-x86_64-windows-0.14.1.zip)
-3. Download [Arm GNU Toolchain](https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/tag/v14.2.1-1.1)
-4. Download [ST link](https://github.com/stlink-org/stlink/releases/tag/v1.8.0)
-5. Download [OpenOCD](https://github.com/xpack-dev-tools/openocd-xpack/releases/tag/v0.12.0-4)
+2. Download [Zig](https://ziglang.org/download/)
+3. Download [Arm GNU Toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
+4. Download [ST link](https://github.com/stlink-org/stlink/releases)
+5. Download [OpenOCD](https://github.com/xpack-dev-tools/openocd-xpack/releases/)
 6. Extract everything to the folder `tools`. Just extract here, no subfolder creation needed
 
 **ST link**
@@ -24,7 +26,7 @@ You need to choice between System wide or User level. Example below work if you 
 ```powershell
 [Environment]::SetEnvironmentVariable(
    "Path",
-   [Environment]::GetEnvironmentVariable("Path", "Machine") + ";C:\tools\stlink-1.8.0-win32\bin;C:\tools\zig-x86_64-windows-0.14.1;C:\tools\xpack-arm-none-eabi-gcc-14.2.1-1.1\bin;C:\tools\xpack-openocd-0.12.0-4\bin",
+   [Environment]::GetEnvironmentVariable("Path", "Machine") + ";C:\tools\stlink-1.8.0-win32\bin;C:\tools\zig-x86_64-windows-0.15.2;C:\tools\arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-eabi\bin;C:\tools\xpack-openocd-0.12.0-7\bin",
    "Machine"
 )
 ```
@@ -33,7 +35,7 @@ You need to choice between System wide or User level. Example below work if you 
 ```powershell
 [Environment]::SetEnvironmentVariable(
    "Path",
-   [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\tools\stlink-1.8.0-win32\bin;C:\tools\zig-x86_64-windows-0.14.1;C:\tools\xpack-arm-none-eabi-gcc-14.2.1-1.1\bin;C:\tools\xpack-openocd-0.12.0-4\bin",
+   [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\tools\stlink-1.8.0-win32\bin;C:\tools\zig-x86_64-windows-0.15.2;C:\tools\arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-eabi\bin;C:\tools\xpack-openocd-0.12.0-7\bin",
    "User"
 )
 ```

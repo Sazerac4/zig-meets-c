@@ -3,7 +3,6 @@
 /*-
  * Copyright (c) 1989, 1993
  *	The Regents of the University of California.  All rights reserved.
- * (c) UNIX System Laboratories, Inc.
  * All or some portions of this file are derived from material licensed
  * to the University of California by American Telephone and Telegraph
  * Co. or Unix System Laboratories, Inc. and are reproduced herein with
@@ -37,40 +36,38 @@
  */
 
 #ifndef _GRP_H_
-#define	_GRP_H_
+#define _GRP_H_
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
 
 #if __BSD_VISIBLE
-#define	_PATH_GROUP		"/etc/group"
+#define _PATH_GROUP "/etc/group"
 #endif
 
 _BEGIN_STD_C
 
 struct group {
-	char	*gr_name;		/* group name */
-	char	*gr_passwd;		/* group password */
-	gid_t	gr_gid;			/* group id */
-	char	**gr_mem;		/* group members */
+    char  *gr_name;   /* group name */
+    char  *gr_passwd; /* group password */
+    gid_t  gr_gid;    /* group id */
+    char **gr_mem;    /* group members */
 };
 
 #ifndef __INSIDE_CYGWIN__
-struct group	*getgrgid (gid_t);
-struct group	*getgrnam (const char *);
+struct group *getgrgid(gid_t);
+struct group *getgrnam(const char *);
 #if __MISC_VISIBLE || __POSIX_VISIBLE
-int		 getgrnam_r (const char *, struct group *,
-			char *, size_t, struct group **);
-int		 getgrgid_r (gid_t, struct group *,
-			char *, size_t, struct group **);
+int getgrnam_r(const char *, struct group *, char *, size_t, struct group **);
+int getgrgid_r(gid_t, struct group *, char *, size_t, struct group **);
 #endif /* __MISC_VISIBLE || __POSIX_VISIBLE */
 #if __MISC_VISIBLE || __XSI_VISIBLE >= 4
-struct group	*getgrent (void);
-void		 setgrent (void);
-void		 endgrent (void);
+struct group *getgrent(void);
+void          setgrent(void);
+void          endgrent(void);
 #endif /* __MISC_VISIBLE || __XSI_VISIBLE >= 4 */
 #if __BSD_VISIBLE
-int		 initgroups (const char *, gid_t);
+int initgroups(const char *, gid_t);
 #endif /* __BSD_VISIBLE */
 #endif /* !__INSIDE_CYGWIN__ */
 

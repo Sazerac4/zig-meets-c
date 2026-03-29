@@ -1,0 +1,51 @@
+root = true
+
+# -------------------------------------------------------
+# Global default settings
+# -------------------------------------------------------
+[*]
+indent_style = space
+indent_size = 4
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# -------------------------------------------------------
+# YAML, TOML
+# -------------------------------------------------------
+[*.{yml,yaml}]
+end_of_line = lf
+indent_size = 2
+
+[*.{toml}]
+end_of_line = lf
+indent_size = 2
+
+# -------------------------------------------------------
+# Scripts
+# -------------------------------------------------------
+[*.{sh,bash}]
+end_of_line = lf
+indent_size = 2
+
+[*.{bat,cmd}]
+end_of_line = crlf
+indent_style = tab
+
+# -------------------------------------------------------
+# Makefiles
+# -------------------------------------------------------
+[Makefile]
+end_of_line = lf
+indent_style = tab
+
+[*.mk]
+end_of_line = lf
+indent_style = tab
+
+# -------------------------------------------------------
+# Markdown and text docs
+# -------------------------------------------------------
+[*.{md,txt}]
+end_of_line = lf
+trim_trailing_whitespace = false

@@ -1,7 +1,6 @@
 /*
 Copyright (c) 1991, 1993
 The Regents of the University of California.  All rights reserved.
-c) UNIX System Laboratories, Inc.
 All or some portions of this file are derived from material licensed
 to the University of California by American Telephone and Telegraph
 Co. or Unix System Laboratories, Inc. and are reproduced herein with
@@ -34,6 +33,6 @@ SUCH DAMAGE.
 #ifndef _UNISTD_H_
 #define _UNISTD_H_
 
-# include <sys/unistd.h>
+#include <sys/unistd.h>
 
 #endif /* _UNISTD_H_ */

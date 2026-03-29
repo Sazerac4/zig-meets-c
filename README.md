@@ -9,6 +9,7 @@
     - [Windows](#windows)
     - [Vs Code / Vs Codium](#vs-code--vs-codium)
     - [Containers (Podman or Docker)](#containers-podman-or-docker)
+      - [Podman Compatibility (Linux)](#podman-compatibility-linux)
   - [SVD Files](#svd-files)
   - [Build](#build)
   - [Testing and CI](#testing-and-ci)
@@ -65,14 +66,14 @@ List of tools that is used around examples
 
 | Name              | Version   | Description                                                             |
 | :---------------- | --------- | :---------------------------------------------------------------------- |
-| Zig               | `0.15.1`  | For compiling C and Zig code                                            |
-| ZLS               | `0.14.0`  | Language Server Protocol for Zig                                        |
-| Arm GNU Toolchain | `14.2.1`  | Tools for C development (gdb, binutils) and libc                        |
-| LLVM+Clang        | `19.1.7`  | Tools for C development (clang-format, clang-tidy, clangd)              |
+| Zig               | `0.15.2`  | For compiling C and Zig code                                            |
+| ZLS               | `0.15.1`  | Language Server Protocol for Zig                                        |
+| Arm GNU Toolchain | `15.2.1`  | Tools for C development (gdb, binutils) and libc                        |
+| LLVM+Clang        | `21.1.8`  | Tools for C development (clang-format, clang-tidy, clangd)              |
 | ST link           | `v1.8.0`  | For flashing firmware                                                   |
 | OpenOCD           | `v0.12.0` | Provides debugging and flashing capabilities.                           |
-| STM32CubeMX       | `6.14.1`  | For the generation of the corresponding initialization C code for STM32 |
-
+| STM32CubeMX       | `6.17`    | For the generation of the corresponding initialization C code for STM32 |
+| Act               | `v0.2.86` | Run GitHub CI locally                                                   |
 
 Some of theses tools are downloaded from the [xPack Binary Development Tools](https://xpack-dev-tools.github.io/) project.
 
@@ -80,30 +81,36 @@ Some of theses tools are downloaded from the [xPack Binary Development Tools](ht
 
 ```bash
 #Fedora
-yum install wget stlink openocd clang-tools-extra clang
+yum install curl stlink openocd clang-tools-extra clang
 #Debian
-apt install xz-utils wget stlink-tools openocd clang-tools clang-tidy clang-format
-
+apt install xz-utils curl stlink-tools openocd clang-tools clang-tidy clang-format
+    
 #Create tools folder
 mkdir -vp /opt/tools
 
-#Install Arm GNU Toolchain (xpack version)
-GCC_VERSION="14.2.1-1.1"
-cd /tmp && wget https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v${GCC_VERSION}/xpack-arm-none-eabi-gcc-${GCC_VERSION}-linux-x64.tar.gz \
-    && tar -xf /tmp/xpack-arm-none-eabi-gcc-*-linux-x64.tar.gz -C /opt/tools/ \
-    && ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-*  ~/.local/bin
+#Install gcc-arm-none-eabi (https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
+GCC_VERSION="15.2.rel1"
+curl -L -o gcc-arm-none-eabi.tar.xz https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_VERSION}/binrel/arm-gnu-toolchain-${GCC_VERSION}-x86_64-arm-none-eabi.tar.xz \
+    && mkdir -vp /opt/tools/gcc-arm-none-eabi \
+    && tar xf gcc-arm-none-eabi.tar.xz -C /opt/tools/gcc-arm-none-eabi \
+    && ln -vs /opt/tools/gcc-arm-none-eabi/bin/*  ~/.local/bin \
+    && rm gcc-arm-none-eabi.tar.xz
 
 #Install Zig
-ZIG_VERSION="0.15.1"
-cd /tmp && wget https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz && \
-    tar -xf /tmp/zig-x86_64-linux-*.tar.xz -C /opt/tools/ && \
-    ln -s /opt/tools/zig-x86_64-linux-*/zig ~/.local/bin
+ZIG_VERSION="0.15.2"
+curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz \
+    && mkdir -vp /opt/tools/ \
+    && tar -xf zig.tar.xz -C /opt/tools/ \
+    && ln -vs /opt/tools/zig-x86_64-linux-*/zig ~/.local/bin \
+    && rm zig.tar.xz
 
 #Install ZLS
-ZLS_VERSION="0.14.0"
-cd /tmp && wget https://github.com/zigtools/zls/releases/download/${ZLS_VERSION}/zls-linux-x86_64-${ZLS_VERSION}.tar.xz && \
-    mkdir -p /opt/tools/zls-linux-x86_64-${ZLS_VERSION} && tar -xf /tmp/zls-linux-x86_64-${ZLS_VERSION}.tar.xz -C /opt/tools/zls-linux-x86_64-${ZLS_VERSION} && \
-    ln -s /opt/tools/zls-linux-x86_64-${ZLS_VERSION}/zls ~/.local/bin
+ZLS_VERSION="0.15.1"
+curl -L -o zls.tar.xz https://github.com/zigtools/zls/releases/download/${ZLS_VERSION}/zls-x86_64-linux.tar.xz \
+    && mkdir -vp /opt/tools/ \
+    && tar -xf zls.tar.xz -C /opt/tools/zls-x86_64-linux \
+    && ln -vs /opt/tools/zls-x86_64-linux/zls ~/.local/bin \
+    && rm zls.tar.xz
 ```
 
 ### Windows
@@ -121,9 +128,9 @@ Two technologies exist, both CLI APIs are mostly compatible: **Docker** and **Po
 
 ```bash
 #Create the image
-podman build -f ContainerFile --tag=zig_and_c:0.15.1 .
+docker build -f ContainerFile --tag=zig_and_c:0.15.2 .
 #Run a container
-podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.15.1
+docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.15.2
 # Navigate to a project (example blinky)
 cd projects/stm32l476_nucleo/blinky
 # Build the firmware
@@ -133,6 +140,29 @@ zig build flash
 ```
 
 Remove dangling image if needed `podman image prune`
+
+#### Podman Compatibility (Linux)
+
+You can create a wrapper script and place it in binary directory that’s in your `PATH` to make `docker` commands work with Podman:
+
+```bash
+#!/bin/bash
+systemctl --user is-active --quiet podman.socket || systemctl --user start podman.socket
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
+podman "$@"
+```
+
+* If you need full daemon compatibility, make sure the Podman socket is enabled and started:
+
+``` bash
+systemctl --user enable --now podman.socket
+```
+
+* Enable linger if podman service run with a server
+
+```bash
+loginctl enable-linger $(whoami)
+```
 
 ## SVD Files
 
@@ -158,7 +188,7 @@ To execute tests using the project's container image:
 
 ```bash
 # Run tests in the container
-podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.15.1 sh ci/build-examples.sh
+docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.15.2 sh ci/build-examples.sh
 ```
 
 ### Testing GitHub Workflows Locally with Act
@@ -174,29 +204,7 @@ act
 
 #### Using Act with Podman on Linux
 
-To configure Act to use Podman instead of Docker:
-
-1. Set up Podman socket and aliases:
-```bash
-# Create Docker alias for Podman
-echo 'alias docker=podman' >> ~/.bashrc
-
-# Configure DOCKER_HOST for Podman
-echo "DOCKER_HOST=\"unix:///run/user/$(id -u)/podman/podman.sock\"" >> ~/.bashrc
-
-# Enable and start Podman socket
-systemctl --user enable --now podman.socket
-```
-
-2. (Optional) Enable user services to run at boot:
-```bash
-loginctl enable-linger $(whoami)
-```
-
-3. Reload your shell configuration:
-```bash
-source ~/.bashrc
-```
+To configure Act to use Podman instead of Docker, see [Podman Compatibility (Linux)](#podman-compatibility-linux)
 
 ## Clang tooling
 

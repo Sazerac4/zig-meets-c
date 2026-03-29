@@ -11,13 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GCC_VERSION: "14.2.1-1.1"
-  ZIG_VERSION: "0.15.1"
+  GCC_VERSION: "15.2.rel1"
+  ZIG_VERSION: "0.15.2"
 
 jobs:
   setup:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v4
         id: cache-zig
         with:
-          path: | 
+          path: |
             /opt/tools/zig-x86_64-linux-${{ env.ZIG_VERSION }}
             /usr/local/bin/zig
           key: ${{ runner.os }}-zig-${{ env.ZIG_VERSION }}
@@ -43,11 +43,11 @@ jobs:
       - name: Install ARM GCC
         if: steps.cache-gcc.outputs.cache-hit != 'true'
         run: |
-          mkdir -vp /opt/tools
-          curl -L -o arm-none-eabi-gcc.tar.gz https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v${GCC_VERSION}/xpack-arm-none-eabi-gcc-${GCC_VERSION}-linux-x64.tar.gz
-          tar -xf arm-none-eabi-gcc.tar.gz -C /opt/tools/
-          ln -s /opt/tools/xpack-arm-none-eabi-gcc-*/bin/arm-none-eabi-* /usr/local/bin/
-          rm arm-none-eabi-gcc.tar.gz
+          mkdir -vp /opt/tools/gcc-arm-none-eabi
+          curl -L -o gcc-arm-none-eabi.tar.xz https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_VERSION}/binrel/arm-gnu-toolchain-${GCC_VERSION}-x86_64-arm-none-eabi.tar.xz
+          tar xf gcc-arm-none-eabi.tar.xz -C /opt/tools/gcc-arm-none-eabi
+          ln -s /opt/tools/gcc-arm-none-eabi/bin/* /usr/local/bin/
+          rm gcc-arm-none-eabi.tar.xz
 
       - name: Install Zig
         if: steps.cache-zig.outputs.cache-hit != 'true'

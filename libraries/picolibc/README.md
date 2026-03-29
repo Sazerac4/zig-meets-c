@@ -2,23 +2,13 @@
 
 ### Prerequisite
 
-Linux
-
-```bash
-#Install needed tool (fedora)
-sudo yum install meson ninja llvm-19 clang-19 lld-19
-#Install needed tool (debian)
-sudo apt install meson ninja-build llvm-19 clang-19 lld-19
-```
-Windows
-
-- [meson+ninja](https://github.com/mesonbuild/meson/releases/tag/1.7.0)
-- [llvm19+clang](https://github.com/llvm/llvm-project/releases/tag/llvmorg-19.1.7)
-
+The container is used to build picolibc. See the prerequisites in the `Containerfile`.
 
 ### Build with container
 
 ```bash
+# Go to the library folder
+cd libraries/picolibc
 # Create the image
 podman build -f ContainerFile --tag=picolibc .
 # Run a container
@@ -29,7 +19,6 @@ meson setup --cross-file /workspace/cross-clang-thumbv7e+fp-custom.txt \
     --prefix=/workspace/thumbv7e+fp \
     -Dtests=false \
     -Dpicocrt=true \
-    -Dnewlib-global-atexit=true  \
     -Ddebug=false \
     -Doptimization=s \
     -Dinitfini=true \

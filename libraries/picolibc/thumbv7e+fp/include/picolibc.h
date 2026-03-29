@@ -22,6 +22,8 @@
 /* Always optimize strcmp for performance */
 #define __FAST_STRCMP
 
+#undef __FSTAT_BUFSIZ
+
 /* use global errno variable */
 #undef __GLOBAL_ERRNO
 
@@ -77,15 +79,12 @@
 
 #undef __IO_WCHAR
 
+#undef __MALLOC_CLEAR_FREED
+
 /* math library sets errno */
 #undef __MATH_ERRNO
 
 #undef __MB_CAPABLE
-
-/* Provide smaller malloc implementation */
-#define __NANO_MALLOC
-
-#undef __NANO_MALLOC_CLEAR_FREED
 
 /* The newlib minor version number. */
 #define __NEWLIB_MINOR__ 3
@@ -118,15 +117,13 @@
 #define __PICOLIBC_MINOR__ 8
 
 /* The Picolibc patch level. */
-#define __PICOLIBC_PATCHLEVEL__ 10
+#define __PICOLIBC_PATCHLEVEL__ 11
 
 /* The Picolibc version in string format. */
-#define __PICOLIBC_VERSION__ "1.8.10"
+#define __PICOLIBC_VERSION__ "1.8.11"
 
 /* The Picolibc major version number. */
 #define __PICOLIBC__ 1
-
-#define __PICO_EXIT
 
 /* Optimize for space over speed */
 #define __PREFER_SIZE_OVER_SPEED
@@ -152,6 +149,6 @@
 /* use thread local storage for stack protection canary */
 #undef __THREAD_LOCAL_STORAGE_STACK_GUARD
 
-/* Use tiny stdio from gcc avr */
+/* Picolibc stdio comes from the avr C library */
 #define __TINY_STDIO
 
