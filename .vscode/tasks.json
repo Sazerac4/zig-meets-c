@@ -7,13 +7,13 @@
             "label": "Run CI",
             "type": "shell",
             "linux": {
-                "command": "docker run --rm -it -v ./:${PWD}:z -w ${PWD} zig_and_c:0.15.2 sh ./ci/build-examples.sh",
+                "command": "docker run --rm -it -v ./:$PWD:z -w $PWD zig_and_c:0.16.0 sh ./ci/build-examples.sh",
             },
             "osx": {
-                "command": "docker run --rm -it -v ./:${PWD}:z -w ${PWD} zig_and_c:0.15.2 sh ./ci/build-examples.sh",
+                "command": "docker run --rm -it -v ./:$PWD:z -w $PWD zig_and_c:0.16.0 sh ./ci/build-examples.sh",
             },
             "windows": {
-                "command": "docker run --rm -it -v ${PWD}:/workspace zig_and_c:0.15.2 sh ./ci/build-examples.sh",
+                "command": "docker run --rm -it -v $PWD:/workspace zig_and_c:0.16.0 sh ./ci/build-examples.sh",
             },
             "options": {
                 "cwd": "${workspaceRoot}",

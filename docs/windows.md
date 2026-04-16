@@ -26,7 +26,7 @@ You need to choice between System wide or User level. Example below work if you 
 ```powershell
 [Environment]::SetEnvironmentVariable(
    "Path",
-   [Environment]::GetEnvironmentVariable("Path", "Machine") + ";C:\tools\stlink-1.8.0-win32\bin;C:\tools\zig-x86_64-windows-0.15.2;C:\tools\arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-eabi\bin;C:\tools\xpack-openocd-0.12.0-7\bin",
+   [Environment]::GetEnvironmentVariable("Path", "Machine") + ";C:\tools\stlink-1.8.0-win32\bin;C:\tools\zig-x86_64-windows-0.16.0;C:\tools\arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-eabi\bin;C:\tools\xpack-openocd-0.12.0-7\bin",
    "Machine"
 )
 ```
@@ -35,7 +35,7 @@ You need to choice between System wide or User level. Example below work if you 
 ```powershell
 [Environment]::SetEnvironmentVariable(
    "Path",
-   [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\tools\stlink-1.8.0-win32\bin;C:\tools\zig-x86_64-windows-0.15.2;C:\tools\arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-eabi\bin;C:\tools\xpack-openocd-0.12.0-7\bin",
+   [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\tools\stlink-1.8.0-win32\bin;C:\tools\zig-x86_64-windows-0.16.0;C:\tools\arm-gnu-toolchain-15.2.rel1-x86_64-arm-none-eabi\bin;C:\tools\xpack-openocd-0.12.0-7\bin",
    "User"
 )
 ```

@@ -37,13 +37,23 @@ pub fn build(b: *std.Build) void {
         .name = exe_name ++ ".elf",
         .linkage = .static,
         .root_module = exe_mod,
+        .use_lld = true,
+        .use_llvm = true,
     });
 
     // Libc integration
-    elf.addLibraryPath(.{ .cwd_relative = "../../../libraries/picolibc/thumbv7e+fp/lib/" });
-    elf.addSystemIncludePath(.{ .cwd_relative = "../../../libraries/picolibc/thumbv7e+fp/include" });
-    elf.linkSystemLibrary("c_pico");
-    elf.linkSystemLibrary("crt0");
+    exe_mod.addLibraryPath(.{ .cwd_relative = "../../../libraries/picolibc/thumbv7e+fp/lib/" });
+    exe_mod.addSystemIncludePath(.{ .cwd_relative = "../../../libraries/picolibc/thumbv7e+fp/include" });
+    exe_mod.linkSystemLibrary("c_pico", .{
+        .needed = true,
+        .preferred_link_mode = .static,
+        .use_pkg_config = .no,
+    });
+    exe_mod.linkSystemLibrary("crt0", .{
+        .needed = true,
+        .preferred_link_mode = .static,
+        .use_pkg_config = .no,
+    });
 
     const c_sources_compile_flags = [_][]const u8{
         c_optimization,
@@ -60,10 +70,10 @@ pub fn build(b: *std.Build) void {
     };
 
     for (c_includes) |path| {
-        elf.addIncludePath(b.path(path));
+        exe_mod.addIncludePath(b.path(path));
     }
 
-    elf.addCSourceFiles(.{
+    exe_mod.addCSourceFiles(.{
         .files = &.{
             "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c",
             "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c",
@@ -88,7 +98,7 @@ pub fn build(b: *std.Build) void {
         .flags = &c_sources_compile_flags,
     });
 
-    elf.addCSourceFiles(.{
+    exe_mod.addCSourceFiles(.{
         .files = &.{
             "Core/Src/main.c",
             "Core/Src/gpio.c",
@@ -103,7 +113,7 @@ pub fn build(b: *std.Build) void {
 
     const c_includes_core = [_][]const u8{"Core/Inc"};
     for (c_includes_core) |path| {
-        elf.addIncludePath(b.path(path));
+        exe_mod.addIncludePath(b.path(path));
     }
 
     exe_mod.addCMacro("USE_HAL_DRIVER", "");
@@ -114,7 +124,7 @@ pub fn build(b: *std.Build) void {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     elf.setLinkerScript(b.path("stm32l476_picolibc.ld"));
     elf.entry = .{ .symbol_name = "_start" }; // Set Entry Point of the firmware (Already set in the linker script)
-    elf.want_lto = false; // -flto
+    elf.lto = .none; // -flto
     elf.link_data_sections = true; // -fdata-sections
     elf.link_function_sections = true; // -ffunction-sections
     elf.link_gc_sections = true; // -Wl,--gc-sections
@@ -134,35 +144,37 @@ pub fn build(b: *std.Build) void {
         std.log.warn("Could not find arm-none-eabi-size or llvm-size, skipping size step", .{});
     }
 
-    // Copy the bin out of the elf
-    const bin = b.addObjCopy(elf.getEmittedBin(), .{
-        .format = .bin,
-    });
-    bin.step.dependOn(&elf.step);
-    const copy_bin = b.addInstallBinFile(bin.getOutput(), exe_name ++ ".bin");
-    b.getInstallStep().dependOn(&copy_bin.step);
+    // NOTE: There's currently some bugs with Zig's implementation of objcopy: https://github.com/ziglang/zig/issues/25653
 
     // Copy the bin out of the elf
-    const hex = b.addObjCopy(elf.getEmittedBin(), .{
-        .format = .hex,
-    });
-    hex.step.dependOn(&elf.step);
-    const copy_hex = b.addInstallBinFile(hex.getOutput(), exe_name ++ ".hex");
-    b.getInstallStep().dependOn(&copy_hex.step);
+    // const bin = b.addObjCopy(elf.getEmittedBin(), .{
+    //     .format = .bin,
+    // });
+    // bin.step.dependOn(&elf.step);
+    // const copy_bin = b.addInstallBinFile(bin.getOutput(), exe_name ++ ".bin");
+    // b.getInstallStep().dependOn(&copy_bin.step);
 
-    //Add st-flash command (https://github.com/stlink-org/stlink)
-    const flash_stlink = b.addSystemCommand(&[_][]const u8{
-        "st-flash",
-        "--reset",
-        "--freq=4000k",
-        "--format=ihex",
-        "write",
-        "zig-out/bin/" ++ exe_name ++ ".hex",
-    });
+    // // Copy the bin out of the elf
+    // const hex = b.addObjCopy(elf.getEmittedBin(), .{
+    //     .format = .hex,
+    // });
+    // hex.step.dependOn(&elf.step);
+    // const copy_hex = b.addInstallBinFile(hex.getOutput(), exe_name ++ ".hex");
+    // b.getInstallStep().dependOn(&copy_hex.step);
 
-    flash_stlink.step.dependOn(&bin.step);
-    const flash_step = b.step("flash", "Flash and run the firmware");
-    flash_step.dependOn(&flash_stlink.step);
+    // //Add st-flash command (https://github.com/stlink-org/stlink)
+    // const flash_stlink = b.addSystemCommand(&[_][]const u8{
+    //     "st-flash",
+    //     "--reset",
+    //     "--freq=4000k",
+    //     "--format=ihex",
+    //     "write",
+    //     "zig-out/bin/" ++ exe_name ++ ".hex",
+    // });
+
+    // flash_stlink.step.dependOn(&bin.step);
+    // const flash_step = b.step("flash", "Flash and run the firmware");
+    // flash_step.dependOn(&flash_stlink.step);
 
     const flash_openocd = b.addSystemCommand(&[_][]const u8{
         "openocd",
@@ -176,15 +188,9 @@ pub fn build(b: *std.Build) void {
         "program zig-out/bin/" ++ exe_name ++ ".elf verify reset exit",
     });
 
-    flash_openocd.step.dependOn(&bin.step);
+    flash_openocd.step.dependOn(&elf.step);
     const flash_step_openocd = b.step("flash_openocd", "Flash and run the firmware");
     flash_step_openocd.dependOn(&flash_openocd.step);
-
-    const clean_step = b.step("clean", "Remove .zig-cache");
-    clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.install_path }).step);
-    if (builtin.os.tag != .windows) {
-        clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.pathFromRoot(".zig-cache") }).step);
-    }
 
     b.getInstallStep().dependOn(&elf.step);
     b.installArtifact(elf);

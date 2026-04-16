@@ -14,7 +14,7 @@ RUN curl -L -o gcc-arm-none-eabi.tar.xz https://developer.arm.com/-/media/Files/
     && rm gcc-arm-none-eabi.tar.xz
 
 #Install Zig
-ARG ZIG_VERSION="0.15.2"
+ARG ZIG_VERSION="0.16.0"
 RUN curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz \
     && mkdir -vp /opt/tools/ \
     && tar -xf zig.tar.xz -C /opt/tools/ \

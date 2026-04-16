@@ -66,7 +66,7 @@ List of tools that is used around examples
 
 | Name              | Version   | Description                                                             |
 | :---------------- | --------- | :---------------------------------------------------------------------- |
-| Zig               | `0.15.2`  | For compiling C and Zig code                                            |
+| Zig               | `0.16.0`  | For compiling C and Zig code                                            |
 | ZLS               | `0.15.1`  | Language Server Protocol for Zig                                        |
 | Arm GNU Toolchain | `15.2.1`  | Tools for C development (gdb, binutils) and libc                        |
 | LLVM+Clang        | `21.1.8`  | Tools for C development (clang-format, clang-tidy, clangd)              |
@@ -97,7 +97,7 @@ curl -L -o gcc-arm-none-eabi.tar.xz https://developer.arm.com/-/media/Files/down
     && rm gcc-arm-none-eabi.tar.xz
 
 #Install Zig
-ZIG_VERSION="0.15.2"
+ZIG_VERSION="0.16.0"
 curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz \
     && mkdir -vp /opt/tools/ \
     && tar -xf zig.tar.xz -C /opt/tools/ \
@@ -128,9 +128,9 @@ Two technologies exist, both CLI APIs are mostly compatible: **Docker** and **Po
 
 ```bash
 #Create the image
-docker build -f ContainerFile --tag=zig_and_c:0.15.2 .
+docker build -f ContainerFile --tag=zig_and_c:0.16.0 .
 #Run a container
-docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.15.2
+docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.16.0
 # Navigate to a project (example blinky)
 cd projects/stm32l476_nucleo/blinky
 # Build the firmware
@@ -188,7 +188,7 @@ To execute tests using the project's container image:
 
 ```bash
 # Run tests in the container
-docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.15.2 sh ci/build-examples.sh
+docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.16.0 sh ci/build-examples.sh
 ```
 
 ### Testing GitHub Workflows Locally with Act
