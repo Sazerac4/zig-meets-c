@@ -1,24 +1,15 @@
 const std = @import("std");
-const c = @cImport({
-    @cDefine("USE_HAL_DRIVER", {});
-    @cDefine("STM32L476xx", {});
-    @cInclude("main.h");
-    @cInclude("usart.h");
-});
-
-const os = @cImport({
-    @cInclude("FreeRTOS.h");
-    @cInclude("task.h");
-});
+const c = @import("c");
+const os = @import("os");
 
 export fn zig_task(params: ?*anyopaque) callconv(.c) void {
     _ = params;
 
     while (true) {
         c.HAL_GPIO_WritePin(c.LD2_GPIO_Port, c.LD2_Pin, c.GPIO_PIN_RESET);
-        os.vTaskDelay(200); // It will delay 2s. Macro "pdMS_TO_TICKS" convert tick to ms don't work as expected.
+        os.vTaskDelay(os.pdMS_TO_TICKS(200));
         c.HAL_GPIO_WritePin(c.LD2_GPIO_Port, c.LD2_Pin, c.GPIO_PIN_SET);
-        os.vTaskDelay(200);
+        os.vTaskDelay(os.pdMS_TO_TICKS(200));
     }
 }
 

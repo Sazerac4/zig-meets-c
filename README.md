@@ -2,7 +2,7 @@
 
 - [Zig Meets C: Cross-Language Development for Embedded Microcontrollers](#zig-meets-c-cross-language-development-for-embedded-microcontrollers)
   - [Description](#description)
-  - [Limitations](#limitations)
+  - [Embedded related progress](#embedded-related-progress)
   - [Examples List](#examples-list)
   - [Installation](#installation)
     - [Linux](#linux)
@@ -34,15 +34,20 @@ This repository explores the integration of Zig into microcontroller development
 
 This is a work in progress, and help is welcome to add more examples, improve documentation, or provide corrections.
 
-## Limitations
+## Embedded related progress
 
-- Using the libc with C code is currently a workaround, and Zig code will ignore it for now. ([Issue](https://github.com/ziglang/zig/issues/20327))
-- JSON Compilation Database, which is used with many C tools (e.g., linters, LSPs, IDE,etc.), not yet supported. ([PR](https://github.com/ziglang/zig/pull/22012)).  
-- `@cImport` is planned to work differently in the future. For more details, see this [Zig issue](https://github.com/ziglang/zig/issues/20630).
-- [Translate-C](https://github.com/ziglang/zig/labels/translate-c) command (and `@cImport`) has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files. (Work in Progress)
-- `Debug` Release mode without `-Og` optimization level can make binary too huge to fit in a device. However, the Clang documentation says `-Og Like -O1. In future versions, this option might disable different optimizations in order to improve debuggability.`, which could imply that the debugging experience may be less effective than with GCC.
-- Set `want_lto` to true can cause startup functions, vector_table and others symbols to be dropped, even if they are exported or used. ([Issue](https://github.com/ziglang/zig/issues/9844). Problem present with 0.14 releases)
-- Regression with finding linker scripts during cross-compilation ([Issue](https://github.com/ziglang/zig/issues/23111))
+| Issue                                                 | Summarry                                                                                                                                           |
+| :---------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [#23111](https://github.com/ziglang/zig/issues/23111) | Regression with finding linker scripts during cross-compilation                                                                                    |
+| [#20630](https://github.com/ziglang/zig/issues/20630) | `@cImport` is planned to be removed.                                                                                                               |
+| [#17365](https://github.com/ziglang/zig/issues/17365) | JSON Compilation Database Generation used with many C tools (e.g., linters, LSPs, IDE,etc.)                                                        |
+| [#20327](https://github.com/ziglang/zig/issues/20327) | LibC interface in build.zig User custom integration ? newlib, picolibc, musl ?                                                                     |
+| [#9844](https://github.com/ziglang/zig/issues/9844)   | LTO cause startup functions, vector_table to be dropped. New [linker](https://ziglang.org/download/0.16.0/release-notes.html#Linker) to solve it ? |
+| [#25653](https://github.com/ziglang/zig/issues/25653) | There's currently some bugs with Zig's implementation of objcopy                                                                                   |
+
+
+* [Translate-C](https://github.com/ziglang/zig/labels/translate-c) command (and `@cImport`) has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files. (Work in Progress)
+* `Debug` Release mode without `-Og` optimization level can make binary too huge to fit in a device. However, the Clang documentation says `-Og Like -O1. In future versions, this option might disable different optimizations in order to improve debuggability.`, which could imply that the debugging experience may be less effective than with GCC.
 
 ## Examples List
 
@@ -67,7 +72,7 @@ List of tools that is used around examples
 | Name              | Version   | Description                                                             |
 | :---------------- | --------- | :---------------------------------------------------------------------- |
 | Zig               | `0.16.0`  | For compiling C and Zig code                                            |
-| ZLS               | `0.15.1`  | Language Server Protocol for Zig                                        |
+| ZLS               | `0.16.0`  | Language Server Protocol for Zig                                        |
 | Arm GNU Toolchain | `15.2.1`  | Tools for C development (gdb, binutils) and libc                        |
 | LLVM+Clang        | `21.1.8`  | Tools for C development (clang-format, clang-tidy, clangd)              |
 | ST link           | `v1.8.0`  | For flashing firmware                                                   |
@@ -105,7 +110,7 @@ curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-lin
     && rm zig.tar.xz
 
 #Install ZLS
-ZLS_VERSION="0.15.1"
+ZLS_VERSION="0.16.0"
 curl -L -o zls.tar.xz https://github.com/zigtools/zls/releases/download/${ZLS_VERSION}/zls-x86_64-linux.tar.xz \
     && mkdir -vp /opt/tools/ \
     && tar -xf zls.tar.xz -C /opt/tools/zls-x86_64-linux \
@@ -147,7 +152,6 @@ You can create a wrapper script and place it in binary directory that’s in you
 
 ```bash
 #!/bin/bash
-systemctl --user is-active --quiet podman.socket || systemctl --user start podman.socket
 export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
 podman "$@"
 ```

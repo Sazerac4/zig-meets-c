@@ -17,20 +17,33 @@ pub fn build(b: *std.Build) void {
 
     // Standard release options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
-    const optimization = b.standardOptimizeOption(.{});
+    const optimize = b.standardOptimizeOption(.{});
 
     // In Debug Release, the default optimization level is set to -O0, which significantly increases the binary size.
     // We override the optimization level with -Og while keeping the other three optimization modes unchanged.
-    const c_optimization = if (optimization == .Debug) "-Og" else if (optimization == .ReleaseSmall) "-Os" else "-O2";
+    const c_optimize = if (optimize == .Debug) "-Og" else if (optimize == .ReleaseSmall) "-Os" else "-O2";
+
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("src/stm_interface.h"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = false,
+    });
 
     const exe_mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
-        .optimize = optimization,
+        .optimize = optimize,
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
         .sanitize_c = .trap,
+        .imports = &.{
+            .{
+                .name = "c",
+                .module = translate_c.createModule(),
+            },
+        },
     });
 
     const elf = b.addExecutable(.{
@@ -56,7 +69,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const c_sources_compile_flags = [_][]const u8{
-        c_optimization,
+        c_optimize,
         "-std=gnu17",
         "-Wall",
         "-Wextra",
@@ -71,6 +84,7 @@ pub fn build(b: *std.Build) void {
 
     for (c_includes) |path| {
         exe_mod.addIncludePath(b.path(path));
+        translate_c.addIncludePath(b.path(path));
     }
 
     exe_mod.addCSourceFiles(.{
@@ -114,6 +128,7 @@ pub fn build(b: *std.Build) void {
     const c_includes_core = [_][]const u8{"Core/Inc"};
     for (c_includes_core) |path| {
         exe_mod.addIncludePath(b.path(path));
+        translate_c.addIncludePath(b.path(path));
     }
 
     exe_mod.addCMacro("USE_HAL_DRIVER", "");

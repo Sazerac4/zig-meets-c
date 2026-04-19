@@ -17,20 +17,33 @@ pub fn build(b: *std.Build) void {
 
     // Standard release options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
-    const optimization = b.standardOptimizeOption(.{});
+    const optimize = b.standardOptimizeOption(.{});
 
     // In Debug Release, the default optimization level is set to -O0, which significantly increases the binary size.
     // We override the optimization level with -Og while keeping the other three optimization modes unchanged.
-    const c_optimization = if (optimization == .Debug) "-Og" else if (optimization == .ReleaseSmall) "-Os" else "-O2";
+    const c_optimize = if (optimize == .Debug) "-Og" else if (optimize == .ReleaseSmall) "-Os" else "-O2";
+
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("src/stm_interface.h"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = false,
+    });
 
     const exe_mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
-        .optimize = optimization,
+        .optimize = optimize,
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
         .sanitize_c = .trap,
+        .imports = &.{
+            .{
+                .name = "c",
+                .module = translate_c.createModule(),
+            },
+        },
     });
 
     const elf = b.addExecutable(.{
@@ -91,7 +104,7 @@ pub fn build(b: *std.Build) void {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const hal_mod = b.createModule(.{
         .target = target,
-        .optimize = optimization,
+        .optimize = optimize,
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
@@ -112,6 +125,7 @@ pub fn build(b: *std.Build) void {
 
     for (hal_includes) |path| {
         hal_mod.addIncludePath(b.path(path));
+        translate_c.addIncludePath(b.path(path));
     }
 
     hal_mod.addCSourceFiles(.{
@@ -138,7 +152,7 @@ pub fn build(b: *std.Build) void {
             "Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c",
         },
         .flags = &.{
-            c_optimization,
+            c_optimize,
             "-std=gnu17",
             "-Wall",
             "-Wextra",
@@ -153,7 +167,7 @@ pub fn build(b: *std.Build) void {
 
     const mw_mod = b.createModule(.{
         .target = target,
-        .optimize = optimization,
+        .optimize = optimize,
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
@@ -174,6 +188,7 @@ pub fn build(b: *std.Build) void {
 
     for (mw_includes) |path| {
         mw_mod.addIncludePath(b.path(path));
+        translate_c.addIncludePath(b.path(path));
     }
 
     mw_mod.addCSourceFiles(.{
@@ -188,7 +203,7 @@ pub fn build(b: *std.Build) void {
             "Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c",
         },
         .flags = &.{
-            c_optimization,
+            c_optimize,
             "-std=gnu17",
             "-Wall",
             "-Wextra",
@@ -216,7 +231,7 @@ pub fn build(b: *std.Build) void {
             "Core/Src/syscalls.c",
         },
         .flags = &.{
-            c_optimization,
+            c_optimize,
             "-std=gnu17",
             "-Wall",
             "-Wextra",
@@ -237,6 +252,7 @@ pub fn build(b: *std.Build) void {
 
     for (app_includes) |path| {
         exe_mod.addIncludePath(b.path(path));
+        translate_c.addIncludePath(b.path(path));
     }
 
     exe_mod.addCMacro("USE_HAL_DRIVER", "");
@@ -314,12 +330,6 @@ pub fn build(b: *std.Build) void {
     flash_openocd.step.dependOn(&elf.step);
     const flash_step_openocd = b.step("flash_openocd", "Flash and run the firmware");
     flash_step_openocd.dependOn(&flash_openocd.step);
-
-    // const clean_step = b.step("clean", "Remove .zig-cache");
-    // clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.install_path }).step);
-    // if (builtin.os.tag != .windows) {
-    //     clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.pathFromRoot(".zig-cache") }).step);
-    // }
 
     b.getInstallStep().dependOn(&elf.step);
     b.installArtifact(elf);

@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Move `@cImport` to the build system
+- Set `.lto = .none`
+
+### Removed
+
+- [#25653](https://github.com/ziglang/zig/issues/25653). Objcopy not used temporarily.
+
+
+## [0.15.2] - 2026-03-29
+
+### Changed
+
 - `docker` used as default command
 - Add missing `.editorconfig` files
 - Regenerate every file with recent STM32CubeMX
@@ -60,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation for Windows and Vs Code has been started.
 - A new example to demonstrate how to build and integrate the libc (picolibc).
 - LICENSE file (MIT)
-- `c_optimization` to override `-O0` in debug mode in the `build.zig` script.  
+- `c_optimize` to override `-O0` in debug mode in the `build.zig` script.  
 - `-Wextra` to C flags in the `build.zig` script.
 - `myPanic` function for each example
 - `arm-none-eabi-size` or `llvm-size` command to be executed after build.

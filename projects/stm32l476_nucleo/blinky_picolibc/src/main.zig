@@ -5,12 +5,7 @@ comptime {
     _ = @import("vector_table.zig");
 }
 
-const c = @cImport({
-    @cDefine("USE_HAL_DRIVER", {});
-    @cDefine("STM32L476xx", {});
-    @cInclude("main.h");
-    @cInclude("usart.h");
-});
+const c = @import("c");
 
 export fn zigEntrypoint() callconv(.c) noreturn {
     while (true) {
