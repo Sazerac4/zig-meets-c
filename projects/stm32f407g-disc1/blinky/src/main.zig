@@ -1,17 +1,11 @@
 const std = @import("std");
+const c = @import("c");
 
 //Responsible for exporting vector table symbols and startup code
 comptime {
     _ = @import("startup.zig");
     _ = @import("vector_table.zig");
 }
-
-const c = @cImport({
-    @cDefine("USE_HAL_DRIVER", {});
-    @cDefine("STM32F407xx", {});
-    @cInclude("main.h");
-    @cInclude("usb_host.h");
-});
 
 const Led = struct {
     port: *c.GPIO_TypeDef,

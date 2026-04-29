@@ -17,26 +17,51 @@ pub fn build(b: *std.Build) void {
 
     // Standard release options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
-    const optimization = b.standardOptimizeOption(.{});
+    const optimize = b.standardOptimizeOption(.{});
 
     // In Debug Release, the default optimization level is set to -O0, which significantly increases the binary size.
     // We override the optimization level with -Og while keeping the other three optimization modes unchanged.
-    const c_optimization = if (optimization == .Debug) "-Og" else if (optimization == .ReleaseSmall) "-Os" else "-O2";
+    const c_optimize = if (optimize == .Debug) "-Og" else if (optimize == .ReleaseSmall) "-Os" else "-O2";
+
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("src/stm_interface.h"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = false,
+    });
+    const translate_os = b.addTranslateC(.{
+        .root_source_file = b.path("src/stm_os.h"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = false,
+    });
 
     const exe_mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
-        .optimize = optimization,
+        .optimize = optimize,
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
         .sanitize_c = .trap,
+        .imports = &.{
+            .{
+                .name = "c",
+                .module = translate_c.createModule(),
+            },
+            .{
+                .name = "os",
+                .module = translate_os.createModule(),
+            },
+        },
     });
 
     const elf = b.addExecutable(.{
         .name = exe_name ++ ".elf",
         .linkage = .static,
         .root_module = exe_mod,
+        .use_lld = true,
+        .use_llvm = true,
     });
 
     //////////////////////////////////////////////////////////////////
@@ -67,23 +92,29 @@ pub fn build(b: *std.Build) void {
     const gcc_arm_lib_path2 = b.fmt("{s}/lib/{s}", .{ gcc_arm_sysroot_path, gcc_arm_multidir_relative_path });
 
     // Manually add "nano" variant newlib C standard lib from arm-none-eabi-gcc library folders
-    elf.addLibraryPath(.{ .cwd_relative = gcc_arm_lib_path1 });
-    elf.addLibraryPath(.{ .cwd_relative = gcc_arm_lib_path2 });
-    elf.addSystemIncludePath(.{ .cwd_relative = b.fmt("{s}/include", .{gcc_arm_sysroot_path}) });
-    elf.linkSystemLibrary("c_nano"); // Use "g_nano" (a debugging-enabled libc) ?
-    elf.linkSystemLibrary("m");
-
-    // Manually include C runtime objects bundled with arm-none-eabi-gcc
-    elf.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crt0.o", .{gcc_arm_lib_path2}) });
-    elf.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crti.o", .{gcc_arm_lib_path1}) });
-    elf.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crtbegin.o", .{gcc_arm_lib_path1}) });
-    elf.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crtend.o", .{gcc_arm_lib_path1}) });
-    elf.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crtn.o", .{gcc_arm_lib_path1}) });
+    exe_mod.addLibraryPath(.{ .cwd_relative = gcc_arm_lib_path1 });
+    exe_mod.addLibraryPath(.{ .cwd_relative = gcc_arm_lib_path2 });
+    exe_mod.addSystemIncludePath(.{ .cwd_relative = b.fmt("{s}/include", .{gcc_arm_sysroot_path}) });
+    exe_mod.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crt0.o", .{gcc_arm_lib_path2}) });
+    exe_mod.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crti.o", .{gcc_arm_lib_path1}) });
+    exe_mod.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crtbegin.o", .{gcc_arm_lib_path1}) });
+    exe_mod.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crtend.o", .{gcc_arm_lib_path1}) });
+    exe_mod.addObjectFile(.{ .cwd_relative = b.fmt("{s}/crtn.o", .{gcc_arm_lib_path1}) });
+    exe_mod.linkSystemLibrary("c_nano", .{ // Use "g_nano" (a debugging-enabled libc) ?
+        .needed = true,
+        .preferred_link_mode = .static,
+        .use_pkg_config = .no,
+    });
+    exe_mod.linkSystemLibrary("m", .{
+        .needed = true,
+        .preferred_link_mode = .static,
+        .use_pkg_config = .no,
+    });
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const hal_mod = b.createModule(.{
         .target = target,
-        .optimize = optimization,
+        .optimize = optimize,
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
@@ -120,7 +151,7 @@ pub fn build(b: *std.Build) void {
         "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c",
     };
     const hal_flags = [_][]const u8{
-        c_optimization,
+        c_optimize,
         "-std=gnu17",
         "-Wall",
         "-Wextra",
@@ -128,6 +159,7 @@ pub fn build(b: *std.Build) void {
 
     for (hal_includes) |path| {
         hal_mod.addIncludePath(b.path(path));
+        translate_c.addIncludePath(b.path(path));
     }
 
     hal_mod.addCSourceFiles(.{
@@ -144,7 +176,7 @@ pub fn build(b: *std.Build) void {
     // FreeRTOS source code
     const os_mod = b.createModule(.{
         .target = target,
-        .optimize = optimization,
+        .optimize = optimize,
         .link_libc = false,
         .strip = false,
         .single_threaded = true, // single core cpu
@@ -175,7 +207,7 @@ pub fn build(b: *std.Build) void {
         "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c",
     };
     const os_flags = [_][]const u8{
-        c_optimization,
+        c_optimize,
         "-std=gnu17",
         "-Wall",
         "-Wextra",
@@ -183,6 +215,7 @@ pub fn build(b: *std.Build) void {
 
     for (os_includes) |path| {
         os_mod.addIncludePath(b.path(path));
+        translate_os.addIncludePath(b.path(path));
     }
     os_mod.addCSourceFiles(.{
         .files = &os_sources,
@@ -210,6 +243,7 @@ pub fn build(b: *std.Build) void {
     };
     for (app_includes) |path| {
         exe_mod.addIncludePath(b.path(path));
+        translate_c.addIncludePath(b.path(path));
     }
 
     const app_sources = [_][]const u8{
@@ -226,7 +260,7 @@ pub fn build(b: *std.Build) void {
         "Core/Src/freertos-openocd.c",
     };
     const app_flags = [_][]const u8{
-        c_optimization,
+        c_optimize,
         "-std=gnu17",
         "-Wall",
         "-Wextra",
@@ -239,6 +273,7 @@ pub fn build(b: *std.Build) void {
     const c_includes_core = [_][]const u8{"Core/Inc"};
     for (c_includes_core) |path| {
         exe_mod.addIncludePath(b.path(path));
+        translate_c.addIncludePath(b.path(path));
     }
 
     exe_mod.addAssemblyFile(b.path("startup_stm32l476xx.s"));
@@ -247,7 +282,7 @@ pub fn build(b: *std.Build) void {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     elf.setLinkerScript(b.path("stm32l476xx_flash.ld"));
-    elf.want_lto = false; // -flto. undefined symbol: vTaskSwitchContext when true.
+    elf.lto = .none; // -flto. undefined symbol: vTaskSwitchContext when true.
     elf.link_data_sections = true; // -fdata-sections
     elf.link_function_sections = true; // -ffunction-sections
     elf.link_gc_sections = true; // -Wl,--gc-sections
@@ -272,35 +307,37 @@ pub fn build(b: *std.Build) void {
         std.log.warn("Could not find arm-none-eabi-size or llvm-size, skipping size step", .{});
     }
 
-    // Copy the bin out of the elf
-    const bin = b.addObjCopy(elf.getEmittedBin(), .{
-        .format = .bin,
-    });
-    bin.step.dependOn(&elf.step);
-    const copy_bin = b.addInstallBinFile(bin.getOutput(), exe_name ++ ".bin");
-    b.getInstallStep().dependOn(&copy_bin.step);
+    // NOTE: There's currently some bugs with Zig's implementation of objcopy: https://github.com/ziglang/zig/issues/25653
 
     // Copy the bin out of the elf
-    const hex = b.addObjCopy(elf.getEmittedBin(), .{
-        .format = .hex,
-    });
-    hex.step.dependOn(&elf.step);
-    const copy_hex = b.addInstallBinFile(hex.getOutput(), exe_name ++ ".hex");
-    b.getInstallStep().dependOn(&copy_hex.step);
+    // const bin = b.addObjCopy(elf.getEmittedBin(), .{
+    //     .format = .bin,
+    // });
+    // bin.step.dependOn(&elf.step);
+    // const copy_bin = b.addInstallBinFile(bin.getOutput(), exe_name ++ ".bin");
+    // b.getInstallStep().dependOn(&copy_bin.step);
 
-    //Add st-flash command (https://github.com/stlink-org/stlink)
-    const flash_stlink = b.addSystemCommand(&[_][]const u8{
-        "st-flash",
-        "--reset",
-        "--freq=4000k",
-        "--format=ihex",
-        "write",
-        "zig-out/bin/" ++ exe_name ++ ".hex",
-    });
+    // // Copy the bin out of the elf
+    // const hex = b.addObjCopy(elf.getEmittedBin(), .{
+    //     .format = .hex,
+    // });
+    // hex.step.dependOn(&elf.step);
+    // const copy_hex = b.addInstallBinFile(hex.getOutput(), exe_name ++ ".hex");
+    // b.getInstallStep().dependOn(&copy_hex.step);
 
-    flash_stlink.step.dependOn(&bin.step);
-    const flash_step = b.step("flash", "Flash and run the firmware (stlink)");
-    flash_step.dependOn(&flash_stlink.step);
+    // //Add st-flash command (https://github.com/stlink-org/stlink)
+    // const flash_stlink = b.addSystemCommand(&[_][]const u8{
+    //     "st-flash",
+    //     "--reset",
+    //     "--freq=4000k",
+    //     "--format=ihex",
+    //     "write",
+    //     "zig-out/bin/" ++ exe_name ++ ".hex",
+    // });
+
+    // flash_stlink.step.dependOn(&bin.step);
+    // const flash_step = b.step("flash", "Flash and run the firmware (stlink)");
+    // flash_step.dependOn(&flash_stlink.step);
 
     const flash_openocd = b.addSystemCommand(&[_][]const u8{
         "openocd",
@@ -314,15 +351,15 @@ pub fn build(b: *std.Build) void {
         "program zig-out/bin/" ++ exe_name ++ ".elf verify reset exit",
     });
 
-    flash_openocd.step.dependOn(&bin.step);
+    flash_openocd.step.dependOn(&elf.step);
     const flash_step_openocd = b.step("flash_openocd", "Flash and run the firmware (openocd)");
     flash_step_openocd.dependOn(&flash_openocd.step);
 
-    const clean_step = b.step("clean", "Remove .zig-cache");
-    clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.install_path }).step);
-    if (builtin.os.tag != .windows) {
-        clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.pathFromRoot(".zig-cache") }).step);
-    }
+    // const clean_step = b.step("clean", "Remove .zig-cache");
+    // clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.install_path }).step);
+    // if (builtin.os.tag != .windows) {
+    //     clean_step.dependOn(&b.addRemoveDirTree(.{ .cwd_relative = b.pathFromRoot(".zig-cache") }).step);
+    // }
 
     b.getInstallStep().dependOn(&elf.step);
     b.installArtifact(elf);
