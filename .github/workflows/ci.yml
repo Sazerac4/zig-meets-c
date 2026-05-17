@@ -27,7 +27,7 @@ jobs:
         id: cache-gcc
         with:
           path: |
-            /opt/tools/xpack-arm-none-eabi-gcc-${{ env.GCC_VERSION }}
+            /opt/tools/gcc-arm-none-eabi/
             /usr/local/bin/arm-none-eabi-*
           key: ${{ runner.os }}-arm-gcc-${{ env.GCC_VERSION }}
 
@@ -45,7 +45,7 @@ jobs:
         run: |
           mkdir -vp /opt/tools/gcc-arm-none-eabi
           curl -L -o gcc-arm-none-eabi.tar.xz https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_VERSION}/binrel/arm-gnu-toolchain-${GCC_VERSION}-x86_64-arm-none-eabi.tar.xz
-          tar xf gcc-arm-none-eabi.tar.xz -C /opt/tools/gcc-arm-none-eabi
+          tar xf gcc-arm-none-eabi.tar.xz -C /opt/tools/gcc-arm-none-eabi --strip-components 1
           ln -s /opt/tools/gcc-arm-none-eabi/bin/* /usr/local/bin/
           rm gcc-arm-none-eabi.tar.xz
 
@@ -57,6 +57,11 @@ jobs:
           tar -xf zig.tar.xz -C /opt/tools/
           ln -s /opt/tools/zig-x86_64-linux-*/zig /usr/local/bin/
           rm zig.tar.xz
+
+      - name: Install CMake build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build make
 
       - name: Build examples
         run: sh ci/build-examples.sh

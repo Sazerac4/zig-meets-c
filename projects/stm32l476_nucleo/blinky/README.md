@@ -1,6 +1,6 @@
 ## Description
 
-This is a simple blinky program written in Zig. It uses the **HAL** drivers, leveraging Zig's `@cImport` capability.
+This is a simple blinky program written in Zig. It uses the **HAL** drivers
 The generated startup code is preserved, and we use Zig's build system for compilation.
 Our Zig code begins at `zigEntrypoint`, and this function is called from C code using linker capabilities. The function is tagged with `callconv(.c)` to ensure compatibility with the C ABI.
 

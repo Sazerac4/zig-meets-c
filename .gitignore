@@ -7,7 +7,11 @@ Makefile
 .mxproject
 
 # Clangd cache
-**/.cache/ 
+**/.cache/
+
+# Drawio
+**/*.drawio.bkp*
+**/*.drawio.dtmp*
 
 # VS code
 **/.vscode/settings.json
@@ -51,7 +55,7 @@ CMakeUserPresets.json
 # -andrewrk
 
 
-**/.zig-cache/ 
+**/.zig-cache/
 **/zig-out/
 **/release/
 **/debug/

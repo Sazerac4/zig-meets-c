@@ -4,6 +4,7 @@
   - [Description](#description)
   - [Embedded related progress](#embedded-related-progress)
   - [Examples List](#examples-list)
+  - [Build](#build)
   - [Installation](#installation)
     - [Linux](#linux)
     - [Windows](#windows)
@@ -11,7 +12,6 @@
     - [Containers (Podman or Docker)](#containers-podman-or-docker)
       - [Podman Compatibility (Linux)](#podman-compatibility-linux)
   - [SVD Files](#svd-files)
-  - [Build](#build)
   - [Testing and CI](#testing-and-ci)
     - [Running Tests with the Repository Container](#running-tests-with-the-repository-container)
     - [Testing GitHub Workflows Locally with Act](#testing-github-workflows-locally-with-act)
@@ -39,21 +39,17 @@ This is a work in progress, and help is welcome to add more examples, improve do
 | Issue                                                 | Summarry                                                                                                                                           |
 | :---------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [#23111](https://github.com/ziglang/zig/issues/23111) | Regression with finding linker scripts during cross-compilation                                                                                    |
-| [#20630](https://github.com/ziglang/zig/issues/20630) | `@cImport` is planned to be removed.                                                                                                               |
 | [#17365](https://github.com/ziglang/zig/issues/17365) | JSON Compilation Database Generation used with many C tools (e.g., linters, LSPs, IDE,etc.)                                                        |
 | [#20327](https://github.com/ziglang/zig/issues/20327) | LibC interface in build.zig User custom integration ? newlib, picolibc, musl ?                                                                     |
 | [#9844](https://github.com/ziglang/zig/issues/9844)   | LTO cause startup functions, vector_table to be dropped. New [linker](https://ziglang.org/download/0.16.0/release-notes.html#Linker) to solve it ? |
 | [#25653](https://github.com/ziglang/zig/issues/25653) | There's currently some bugs with Zig's implementation of objcopy                                                                                   |
 
-
-* [Translate-C](https://github.com/ziglang/zig/labels/translate-c) command (and `@cImport`) has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files. (Work in Progress)
+* [Translate-C](https://codeberg.org/ziglang/translate-c/issues) command has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files. (Work in Progress)
 * `Debug` Release mode without `-Og` optimization level can make binary too huge to fit in a device. However, the Clang documentation says `-Og Like -O1. In future versions, this option might disable different optimizations in order to improve debuggability.`, which could imply that the debugging experience may be less effective than with GCC.
 
 ## Examples List
 
 The examples are built for a specific target. However, the documentation will try to explain enough about what Zig implies to change in an example so that you can figure out what you need to change when applying it to other targets (with more or less difficulty).
-
-**Project tree**
 
 ```
 projects/
@@ -62,8 +58,14 @@ projects/
 └── stm32l476_nucleo
     ├── blinky
     ├── blinky_freertos
-    └── blinky_picolibc
+    ├── blinky_picolibc
+    └── juicy_hello_world_cmake
 ```
+
+## Build
+
+All projects use the [Zig Build System](https://ziglang.org/learn/build-system/).  
+Check the `README.md` of an project example for additional specific information.
 
 ## Installation
 
@@ -79,8 +81,7 @@ List of tools that is used around examples
 | OpenOCD           | `v0.12.0` | Provides debugging and flashing capabilities.                           |
 | STM32CubeMX       | `6.17`    | For the generation of the corresponding initialization C code for STM32 |
 | Act               | `v0.2.86` | Run GitHub CI locally                                                   |
-
-Some of theses tools are downloaded from the [xPack Binary Development Tools](https://xpack-dev-tools.github.io/) project.
+| CMake             | >= `3.22` | A Software Build System                                                 |
 
 ### Linux
 
@@ -140,8 +141,6 @@ docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.1
 cd projects/stm32l476_nucleo/blinky
 # Build the firmware
 zig build
-# Flash the device (Linux only)
-zig build flash
 ```
 
 Remove dangling image if needed `podman image prune`
@@ -156,15 +155,10 @@ export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
 podman "$@"
 ```
 
-* If you need full daemon compatibility, make sure the Podman socket is enabled and started:
-
 ``` bash
+# If you need full daemon compatibility, make sure the Podman socket is enabled and started:
 systemctl --user enable --now podman.socket
-```
-
-* Enable linger if podman service run with a server
-
-```bash
+# Enable linger if podman service run with a server
 loginctl enable-linger $(whoami)
 ```
 
@@ -178,11 +172,6 @@ The CMSIS System View Description format(CMSIS-SVD) formalizes the description o
 <img src="docs/images/vscode1.png" alt="drawing" width="50%"/>
 
 You can found stm32 SVD files in this [Github repository](https://github.com/modm-io/cmsis-svd-stm32)
-
-## Build
-
-All projects use the [Zig Build System](https://ziglang.org/learn/build-system/).  
-Check the `README.md` of an project example for additional specific information.
 
 ## Testing and CI
 
@@ -239,7 +228,7 @@ find ./ -name '*.c' -o  -name '*.h'| xargs clang-format -style=file -i --verbose
 
 - [Zig Guide: working with C](https://zig.guide/working-with-c/abi/) A Guide to learn the Zig Programming Language
 - [Ziggit](https://ziggit.dev/) A community for anyone interested in the Zig Programming Language.
-- [STM32 Guide](https://github.com/haydenridd/stm32-zig-porting-guide) will help you to understand and port your current project with different level of Zig integration.  [Ziggit topic](https://ziggit.dev/t/stm32-porting-guide-first-pass/4414).
+- [STM32 Guide](https://github.com/haydenridd/stm32-zig-porting-guide) will help you to understand and port your current project with different level of Zig integration. [Ziggit topic](https://ziggit.dev/t/stm32-porting-guide-first-pass/4414).
 - [Zig Embedded Group](https://github.com/ZigEmbeddedGroup) A group of people dedicated to improve the Zig Embedded Experience
 - [All Your Codebase](https://github.com/allyourcodebase) is an organization that package C/C++ projects for the Zig build system so that you can reliably compile (and cross-compile!) them with ease.
 - [Awesome Zig](https://github.com/zigcc/awesome-zig?tab=readme-ov-file) This repository lists "awesome" projects written in Zig, maintained by ZigCC community.

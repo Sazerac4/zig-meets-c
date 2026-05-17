@@ -1,9 +1,9 @@
-FROM fedora:43
+FROM fedora:44
 LABEL description "Build zig examples" \
     maintainer="Sazerac4 <lm-embeddedsystems@laposte.net>"
 
 #Install tools
-RUN yum install --setopt=install_weak_deps=False -y curl xz ca-certificates make stlink openocd && yum clean all && rm -rf -- /var/cache/yum
+RUN yum install --setopt=install_weak_deps=False -y curl xz ca-certificates git cmake make ninja-build stlink openocd nodejs && yum clean all && rm -rf -- /var/cache/yum
 
 #Install gcc-arm-none-eabi (https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
 ARG GCC_VERSION="15.2.rel1"

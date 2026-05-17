@@ -1,0 +1,26 @@
+# Clangd daemon arguments needed
+#        "--query-driver=/opt/bin/arm-none-eabi-gcc",
+#        "--header-insertion=never",
+#        "--enable-config",
+
+CompileFlags:
+  Compiler : arm-none-eabi-gcc
+  CompilationDatabase : "build/"
+  BuiltinHeaders: QueryDriver
+  Remove: [ -ftrack-macro-expansion=* ]
+
+Completion:
+  AllScopes: Yes
+  ArgumentLists: FullPlaceholders
+  HeaderInsertion : Never
+  CodePatterns: All
+
+Diagnostics:
+  UnusedIncludes: None
+
+---
+
+If:
+  PathMatch: [ Drivers/.*, Middlewares/.*, Core/.* ]
+Diagnostics:
+  Suppress: '*'

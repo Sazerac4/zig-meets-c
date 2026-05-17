@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New exemple project code  `juicy_hello_world_cmake`
+
 ### Changed
 
 - Move `@cImport` to the build system
@@ -15,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - [#25653](https://github.com/ziglang/zig/issues/25653). Objcopy not used temporarily.
+- `@cImport` references removed
 
 
 ## [0.15.2] - 2026-03-29

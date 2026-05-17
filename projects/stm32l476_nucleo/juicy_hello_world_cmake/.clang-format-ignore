@@ -1,0 +1,7 @@
+# Work with clangd-format command line tool only, not clangd. Use clang-format-2025 extension with VScode
+.zig-cache/**
+
+# Generated code
+Middlewares/**
+Drivers/**
+Core/**

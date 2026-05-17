@@ -1,0 +1,143 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "♻ Init (debug)",
+            "type": "shell",
+            "linux": {
+                "command": "rm -rf -- ./build/ && cmake --preset=Debug . && cmake --build build/ -j$(nproc)",
+            },
+            "osx": {
+                "command": "rm -rf -- ./build/ && cmake --preset=Debug . && cmake --build build/ -j$(nproc)",
+            },
+            "windows": {
+                "command": "Remove-Item -Recurse -Force ./build/ -ErrorAction SilentlyContinue ; cmake --preset=Debug . ; cmake --build build/ -j($ENV:NUMBER_OF_PROCESSORS)",
+            },
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "statusbar": {
+                    "hide": false,
+                    "color": "#ffffff",
+                    "label": "♻ Init (debug)"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true,
+            }
+        },
+        {
+            "label": "♻ Init (release)",
+            "type": "shell",
+            "linux": {
+                "command": "rm -rf -- ./build/ && cmake --preset=Release . && cmake --build build/ -j$(nproc)",
+            },
+            "osx": {
+                "command": "rm -rf -- ./build/ && cmake --preset=Release . && cmake --build build/ -j$(nproc)",
+            },
+            "windows": {
+                "command": "Remove-Item -Recurse -Force ./build/ -ErrorAction SilentlyContinue ; cmake --preset=Release . ; cmake --build build/ -j($ENV:NUMBER_OF_PROCESSORS)",
+            },
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "statusbar": {
+                    "hide": false,
+                    "color": "#ffffff",
+                    "label": "♻ Init (release)"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true,
+            }
+        },
+        {
+            "label": "$(gear) Build",
+            "type": "shell",
+            "linux": {
+                "command": "cmake --build build/ -j$(nproc)",
+            },
+            "osx": {
+                "command": "cmake --build build/ -j$(nproc)",
+            },
+            "windows": {
+                "command": "cmake --build build/ -j($ENV:NUMBER_OF_PROCESSORS)",
+            },
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "statusbar": {
+                    "color": "#42d842",
+                    "label": "$(gear) Build"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "$(chip) Flash",
+            "type": "shell",
+            "linux": {
+                "command": "openocd -f scripts/init_stm32l4.cfg -c \"program build/juicy_hello_world_cmake.elf verify reset exit\"",
+            },
+            "osx": {
+                "command": "openocd -f scripts/init_stm32l4.cfg -c \"program build/juicy_hello_world_cmake.elf verify reset exit\"",
+            },
+            "windows": {
+                "command": "openocd -f scripts/init_stm32l4.cfg -c \"program build/juicy_hello_world_cmake.elf verify reset exit\"",
+            },
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "statusbar": {
+                    "color": "#e9e626",
+                    "label": "$(chip) Flash",
+                    "hide": false,
+                }
+            },
+            "dependsOn": [
+                "$(gear) Build"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Log",
+            "type": "shell",
+            "linux": {
+                "command": "./scripts/log_linux.sh",
+            },
+            "osx": {
+                "command": "echo 'Not implemented'; exit 1",
+            },
+            "windows": {
+                "command": "echo 'Not implemented'; exit 1",
+            },
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "statusbar": {
+                    "color": "#e21754",
+                    "label": "$(mic) Log",
+                    "hide": false,
+                }
+            },
+            "dependsOn": [],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ]
+}
