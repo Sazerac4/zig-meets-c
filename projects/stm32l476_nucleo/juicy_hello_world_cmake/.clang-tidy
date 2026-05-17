@@ -1,0 +1,132 @@
+Checks:
+  - bugprone-*
+  - cert-*
+  - clang-analyzer-*
+  - misc-*
+  - modernize-*
+  - portability-*
+  - performance-*
+  - readability-*
+  - abseil-*
+
+  #################################################################
+  #Linter control removed. (it need a justification for each rule)
+  #################################################################
+  # Secure libc API not always available.
+  - -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+  # Extra parentheses can bloat expressions and reduce readability.
+  - -readability-math-missing-parentheses
+  # Subjective; well-designed and well-documented parameters reduce already the risk.
+  - -bugprone-easily-swappable-parameters
+  # Indirect includes can be intentional, e.g. from code generators or grouped library includes.
+  - -misc-include-cleaner
+  # Hardware peripherals are just values cast to pointer (not portable already and correctly aligned).
+  - -performance-no-int-to-ptr
+  # Many macros have the same value or are masks associated with a value. These should be modernized manually.
+  - -modernize-macro-to-enum
+  # Registers are memory-mapped to fixed addresses; dereferencing these addresses happens frequently, and this warning causes a lot of noise.
+  - -clang-analyzer-core.FixedAddressDereference
+  # Chance to get symbol name collisions with standard is very small.
+  - -bugprone-reserved-identifier
+  # Alias: bugprone-reserved-identifier.
+  - -cert-dcl37-c
+  # Alias: bugprone-reserved-identifier.
+  - -cert-dcl51-cpp
+
+RemovedArgs: [ "-ftrack-macro-expansion=0" ] # clang-22
+FormatStyle: 'file'
+CheckOptions:
+  - key:   readability-function-cognitive-complexity.Threshold
+    value: 30
+  - key:   readability-function-cognitive-complexity.IgnoreMacros
+    value: true
+  - key:   readability-uppercase-literal-suffix.NewSuffixes
+    value: 'L;LL;UL;ULL'
+  - key:   modernize-use-nullptr.NullMacros
+    value: 'NULL'
+  - key:   readability-braces-around-statements.ShortStatementLines
+    value: '1'
+  - key:   readability-identifier-length.MinimumVariableNameLength
+    value: '1'
+  - key:   readability-identifier-length.MinimumParameterNameLength
+    value: '1'
+  - key:   readability-identifier-length.MinimumLoopCounterNameLength
+    value: '1'
+  - key:   readability-magic-numbers.IgnoredIntegerValues
+    value: '0;1;2;3;4;10;100;1000' # Array index up to 4 elements + power of 10 for units conversion
+  - key:   readability-magic-numbers.IgnoredFloatingPointValues
+    value: '2.0;10.0;100.0;1000.0' # pow + power of 10 for units conversion
+  - key:   readability-magic-numbers.IgnorePowersOf2IntegerValues
+    value: true
+  ################### Style ################################
+  # Constant
+  - key:   readability-identifier-naming.ConstantCase
+    value: 'lower_case'
+  - key:   readability-identifier-naming.ConstantPrefix
+    value: ''
+  - key:   readability-identifier-naming.ConstantIgnoredRegexp
+    value: ''
+  # Constant (pointer)
+  - key:   readability-identifier-naming.ConstantPointerParameterCase
+    value: 'lower_case'
+  - key:   readability-identifier-naming.ConstantPointerPrefix
+    value: ''
+  - key:   readability-identifier-naming.ConstantPointerParameterIgnoredRegexp
+    value: ''
+  # Constant (global pointer)
+  - key:   readability-identifier-naming.GlobalConstantPointerCase
+    value: 'lower_case'
+  - key:   readability-identifier-naming.GlobalConstantPrefix
+    value: ''
+  - key:   readability-identifier-naming.GlobalConstantPointerIgnoredRegexp
+    value: ''
+  # Constant (global const)
+  - key:   readability-identifier-naming.GlobalConstantCase
+    value: 'lower_case'
+  - key:   readability-identifier-naming.GlobalConstantPrefix
+    value: ''
+  - key:   readability-identifier-naming.GlobalConstantIgnoredRegexp
+    value: ''
+  # Macros
+  - key:   readability-identifier-naming.MacroDefinitionCase
+    value: 'UPPER_CASE'
+  # Variable
+  - key:   readability-identifier-naming.VariableCase
+    value: 'lower_case'
+  # Variable (Static)
+  - key:   readability-identifier-naming.StaticVariableCase
+    value: lower_case
+  - key:   readability-identifier-naming.StaticVariableSuffix
+    value: ''
+  # Variable (Global)
+  - key:   readability-identifier-naming.GlobalVariableCase
+    value: lower_case
+  - key:   readability-identifier-naming.GlobalVariableSuffix
+    value: ''
+  # Enumeration
+  - key:   readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key:   readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key:   readability-identifier-naming.ScopedEnumConstantCase
+    value: UPPER_CASE
+  # Function
+  - key:   readability-identifier-naming.FunctionCase
+    value: 'lower_case'
+  - key:   readability-identifier-naming.FunctionIgnoredRegexp
+    value: ''
+  # Function (Global)
+  - key:   readability-identifier-naming.GlobalFunctionCase
+    value: 'lower_case'
+  - key:   readability-identifier-naming.GlobalFunctionIgnoredRegexp
+    value: '^.*_InterruptHandler$|^.*_Handler$' #Allow IRQ function name
+  # Structure
+  - key:   readability-identifier-naming.StructCase
+    value: 'CamelCase'
+  # Union
+  - key:   readability-identifier-naming.UnionCase
+    value: 'CamelCase'
+  # Typedef
+  - key:   readability-identifier-naming.TypedefCase
+    value: 'CamelCase'
+

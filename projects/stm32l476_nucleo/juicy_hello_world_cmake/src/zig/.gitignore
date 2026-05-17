@@ -1,0 +1,3 @@
+# This is a generated file. Using modules with different paths could be a solution, but zig build-obj produces different outputs depending on the module path.
+# As a bonus, ZLS can also resolve the symbols.
+translate.zig

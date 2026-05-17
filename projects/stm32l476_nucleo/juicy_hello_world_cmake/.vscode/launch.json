@@ -1,0 +1,51 @@
+{
+    "configurations": [
+        {
+            "name": "Attach (openocd)",
+            "showDevDebugOutput": "parsed",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/juicy_hello_world_cmake.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "gdbPath": "arm-none-eabi-gdb",
+            "device": "STM32L476",
+            "configFiles": [
+                "${workspaceFolder}/scripts/init_stm32l4.cfg",
+            ],
+            "liveWatch": {
+                "enabled": false,
+                "samplesPerSecond": 2
+            },
+            "debuggerArgs": [
+                "-x",
+                "${workspaceFolder}/.gdbinit"
+            ],
+            "svdFile": "${workspaceFolder}/STM32L476.svd"
+        },
+        {
+            "name": "Launch (openocd)",
+            "showDevDebugOutput": "parsed",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/juicy_hello_world_cmake.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "openocd",
+            "gdbPath": "arm-none-eabi-gdb",
+            "device": "STM32L476",
+            "configFiles": [
+                "${workspaceFolder}/scripts/init_stm32l4.cfg",
+            ],
+            "liveWatch": {
+                "enabled": false,
+                "samplesPerSecond": 2
+            },
+            "debuggerArgs": [
+                "-x",
+                "${workspaceFolder}/.gdbinit"
+            ],
+            "svdFile": "${workspaceFolder}/STM32L476.svd"
+        },
+    ]
+}

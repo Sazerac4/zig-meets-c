@@ -1,6 +1,6 @@
 ## Description
 
-This is a simple blinky program written in Zig. It uses the **HAL** drivers, leveraging Zig's `@cImport` capability.
+This is a simple blinky program written in Zig. It uses the **HAL** drivers
 The generated startup code is preserved, and we use Zig's build system for compilation.
 Our Zig code begins at `zigEntrypoint`, and this function is called from C code using linker capabilities. The function is tagged with `callconv(.c)` to ensure compatibility with the C ABI.
 In this example, we will also use a vector table and startup code written in Zig.
@@ -48,9 +48,9 @@ To use Zig in any microcontrollers `STM32CubeMX` generated project, follow these
     3. Remove `READONLY` from all sections (6.14.1 Update). For example, change: `.ARM (READONLY) :` to `.ARM: `
     4. (Optional) Rename the file to prevent STM32CubeMX from regenerating it each time you update your settings. In this example, use a lowercase name: `stm32f407xx_flash.ld`.
 
-5. **Implement the Vector Table** The file `startup_stm32f407xx.s` contains the vector table `g_pfnVectors`. The Zig translation, `vector_table.zig`, will include an equivalent implementation. Note: Since STM32CubeMX can generate handler functions automatically, the default handlers will only be used if they are not overridden by the user or in `stm32f4xx_it.c` file.  
+5. **Implement the Vector Table** The file `startup_stm32f407xx.s` contains the vector table `g_pfnVectors`. The Zig translation, `vector_table.zig`, will include an equivalent implementation. Note: Since STM32CubeMX can generate handler functions automatically, the default handlers will only be used if they are not overridden by the user or in `stm32f4xx_it.c` file.
 
-6. **"Implement the startup code:** The file `startup_stm32f407xx.s` contains the `Reset_Handler` function. The Zig translation, `startup.zig`, will include an equivalent `resetHandler` function written in Zig."**  
+6. **"Implement the startup code:** The file `startup_stm32f407xx.s` contains the `Reset_Handler` function. The Zig translation, `startup.zig`, will include an equivalent `resetHandler` function written in Zig."**
 
 7. **Create a `main.zig` file** with a custom entry point, such as `zigEntrypoint`.
 
