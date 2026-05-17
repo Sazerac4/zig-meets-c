@@ -159,7 +159,7 @@
             <mxPoint x="-548.87" y="-657.0400000000001" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="YBbbNXW-v1V0OG43j2c6-22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;labelBackgroundColor=none;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;direction=south;" value="std lib" vertex="1">
+        <mxCell id="YBbbNXW-v1V0OG43j2c6-22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;labelBackgroundColor=none;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;direction=south;" value="Standard Library&amp;nbsp;" vertex="1">
           <mxGeometry height="40" width="63" x="-791" y="-604" as="geometry" />
         </mxCell>
         <mxCell id="YBbbNXW-v1V0OG43j2c6-23" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" value="">

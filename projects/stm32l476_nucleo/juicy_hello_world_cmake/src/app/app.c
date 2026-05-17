@@ -106,7 +106,7 @@ void app_entrypoint(void)
         LOG("S.N (b58):    \"%s\"", serial_number_base58);
     }
     LOG();
-    LOG("Hello world !");
+    LOG("Hello, World!");
     LOG();
 
     // Blink time !
