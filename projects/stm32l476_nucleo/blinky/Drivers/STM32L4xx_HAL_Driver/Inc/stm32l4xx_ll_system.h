@@ -1433,6 +1433,12 @@ __STATIC_INLINE uint32_t LL_FLASH_GetLatency(void)
   return (uint32_t)(READ_BIT(FLASH->ACR, FLASH_ACR_LATENCY));
 }
 
+/* SECURITY: STM32L476 ships with RDP Level 0 (debug port fully open).
+ * Production firmware MUST configure RDP to Level 1 or Level 2 to prevent
+ * unauthorized flash readout via SWD/JTAG. See FLASH_OPTR register (bits[7:0]).
+ */
+#warning "SECURITY: Configure RDP to Level 1+ in production (FLASH_OPTR RDP != 0xAA)."
+
 /**
   * @brief  Enable Prefetch
   * @rmtoll FLASH_ACR    PRFTEN        LL_FLASH_EnablePrefetch
