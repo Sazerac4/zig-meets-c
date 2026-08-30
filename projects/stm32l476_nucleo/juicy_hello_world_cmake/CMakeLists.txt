@@ -151,7 +151,15 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
 ##############################################################################################
 include(${CMAKE_SOURCE_DIR}/cmake/zig-module.cmake)
 
-add_zig_module(
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+set(ZIG_RELEASE -ODebug -fno-strip)
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+set(ZIG_RELEASE -OReleaseSafe)
+else()
+message(FATAL_ERROR "${CMAKE_BUILD_TYPE} is not a valid build type")
+endif()
+
+zig_add_module(
     NAME libzig
     LINK_TO ${CMAKE_PROJECT_NAME}
     SRC_ROOT ${CMAKE_SOURCE_DIR}/src/zig/libzig.zig
@@ -168,7 +176,10 @@ add_zig_module(
         ${CMAKE_BINARY_DIR}/cmake_version.h
 
     BUILD_OPTS
-        # Optional zig build-obj flags
+        ${ZIG_RELEASE}
+        
+    TRANSLATE_OPTS
+        # optional zig flags
 )
 
 ##############################################################################################
