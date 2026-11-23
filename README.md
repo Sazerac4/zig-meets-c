@@ -1,6 +1,6 @@
-# Zig Meets C: Cross-Language Development for Embedded Microcontrollers
+# EZI: Embedded Zig Integration (baremetal)
 
-- [Zig Meets C: Cross-Language Development for Embedded Microcontrollers](#zig-meets-c-cross-language-development-for-embedded-microcontrollers)
+- [EZI: Embedded Zig Integration (baremetal)](#ezi-embedded-zig-integration-baremetal)
   - [Description](#description)
   - [Embedded related progress](#embedded-related-progress)
   - [Examples List](#examples-list)
@@ -30,7 +30,7 @@
 - Your future project rely heavily on C-based components, such as operating systems (e.g., FreeRTOS), filesystems (e.g., LittleFS), libraries, drivers, etc. You don’t want to rewrite initialization or configuration routines that already work well and are widely used elsewhere.
 - You work with coworkers who will maintain, update, and/or test parts of the project's C code. They may not use Zig—either not yet or never.
 
-This repository explores the integration of Zig into microcontroller development projects that are already written in C, covering both bare-metal and OS-based environments. It provides practical examples, tutorials, and tools to help developers combine the power of Zig's modern features with the established C ecosystem.
+This repository explores the integration of Zig into microcontrollers development projects that are already written in C, covering both bare-metal and OS-based environments. It provides practical examples, tutorials, and tools to help developers combine the power of Zig's modern features with the established C ecosystem.
 
 This is a work in progress, and help is welcome to add more examples, improve documentation, or provide corrections.
 
@@ -41,7 +41,7 @@ This is a work in progress, and help is welcome to add more examples, improve do
 | [#23111](https://github.com/ziglang/zig/issues/23111) | Regression with finding linker scripts during cross-compilation                                                                                    |
 | [#17365](https://github.com/ziglang/zig/issues/17365) | JSON Compilation Database Generation used with many C tools (e.g., linters, LSPs, IDE,etc.)                                                        |
 | [#20327](https://github.com/ziglang/zig/issues/20327) | LibC interface in build.zig User custom integration ? newlib, picolibc, musl ?                                                                     |
-| [#9844](https://github.com/ziglang/zig/issues/9844)   | LTO cause startup functions, vector_table to be dropped. New [linker](https://ziglang.org/download/0.16.0/release-notes.html#Linker) to solve it ? |
+| [#9844](https://github.com/ziglang/zig/issues/9844)   | LTO cause startup functions, vector_table to be dropped. New [linker](https://ziglang.org/download/0.17.1/release-notes.html#Linker) to solve it ? |
 | [#25653](https://github.com/ziglang/zig/issues/25653) | There's currently some bugs with Zig's implementation of objcopy                                                                                   |
 
 * [Translate-C](https://codeberg.org/ziglang/translate-c/issues) command has difficulty translating some C declarations and macros found in Embedded Drivers or CMSIS files. (Work in Progress)
@@ -73,8 +73,8 @@ List of tools that is used around examples
 
 | Name              | Version   | Description                                                             |
 | :---------------- | --------- | :---------------------------------------------------------------------- |
-| Zig               | `0.16.0`  | For compiling C and Zig code                                            |
-| ZLS               | `0.16.0`  | Language Server Protocol for Zig                                        |
+| Zig               | `0.17.1`  | For compiling C and Zig code                                            |
+| ZLS               | `0.17.1`  | Language Server Protocol for Zig                                        |
 | Arm GNU Toolchain | `15.2.1`  | Tools for C development (gdb, binutils) and libc                        |
 | LLVM+Clang        | `21.1.8`  | Tools for C development (clang-format, clang-tidy, clangd)              |
 | ST link           | `v1.8.0`  | For flashing firmware                                                   |
@@ -95,7 +95,7 @@ apt install xz-utils curl stlink-tools openocd clang-tools clang-tidy clang-form
 mkdir -vp /opt/tools
 
 #Install gcc-arm-none-eabi (https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
-GCC_VERSION="15.2.rel1"
+GCC_VERSION="15.3.rel2"
 curl -L -o gcc-arm-none-eabi.tar.xz https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_VERSION}/binrel/arm-gnu-toolchain-${GCC_VERSION}-x86_64-arm-none-eabi.tar.xz \
     && mkdir -vp /opt/tools/gcc-arm-none-eabi \
     && tar xf gcc-arm-none-eabi.tar.xz -C /opt/tools/gcc-arm-none-eabi \
@@ -103,7 +103,7 @@ curl -L -o gcc-arm-none-eabi.tar.xz https://developer.arm.com/-/media/Files/down
     && rm gcc-arm-none-eabi.tar.xz
 
 #Install Zig
-ZIG_VERSION="0.16.0"
+ZIG_VERSION="0.17.1"
 curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz \
     && mkdir -vp /opt/tools/ \
     && tar -xf zig.tar.xz -C /opt/tools/ \
@@ -111,7 +111,7 @@ curl -L -o zig.tar.xz https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-lin
     && rm zig.tar.xz
 
 #Install ZLS
-ZLS_VERSION="0.16.0"
+ZLS_VERSION="0.17.1"
 curl -L -o zls.tar.xz https://github.com/zigtools/zls/releases/download/${ZLS_VERSION}/zls-x86_64-linux.tar.xz \
     && mkdir -vp /opt/tools/ \
     && tar -xf zls.tar.xz -C /opt/tools/zls-x86_64-linux \
@@ -134,9 +134,9 @@ Two technologies exist, both CLI APIs are mostly compatible: **Docker** and **Po
 
 ```bash
 #Create the image
-docker build -f ContainerFile --tag=zig_and_c:0.16.0 .
+podman build -f ContainerFile --tag=zig_and_c:0.17.1 .
 #Run a container
-docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.16.0
+podman run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.17.1
 # Navigate to a project (example blinky)
 cd projects/stm32l476_nucleo/blinky
 # Build the firmware
@@ -181,7 +181,7 @@ To execute tests using the project's container image:
 
 ```bash
 # Run tests in the container
-docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.16.0 sh ci/build-examples.sh
+docker run --rm -it --privileged -v ./:/workspace --name=zig_and_c zig_and_c:0.17.1 sh ci/build-examples.sh
 ```
 
 ### Testing GitHub Workflows Locally with Act

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-11-23
+
+### Changed
+
+- Rename the project: `Embedded Zig Integration`
+- Zig bump version to 0.17.1
+- Gcc bump version to 15.3.rel2
+- `podman` used as default command
+
+### Fixed
+
+- API change: Release Mode
+- API change: `findProgram`
+
+## [0.16.0] - 2026-08-30
+
 ### Added
 
 - New exemple project code  `juicy_hello_world_cmake`
@@ -83,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `arm-none-eabi-size` or `llvm-size` command to be executed after build.
 - Safe build task with Vscode
 - Description paragraph for each example
-- Disable the sanitizer to reduce binary size in certain release configurations. `.sanitize_c = if (optimization == .Debug or optimization == .ReleaseFast) false else true,`.
+- Disable the sanitizer to reduce binary size in certain release configurations. `.sanitize_c = if (optimization == .debug or optimization == .fast) false else true,`.
 
 ### Changed
 
