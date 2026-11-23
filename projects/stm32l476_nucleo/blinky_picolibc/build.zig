@@ -16,12 +16,12 @@ pub fn build(b: *std.Build) void {
     const target = b.resolveTargetQuery(query);
 
     // Standard release options allow the person running `zig build` to select
-    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
+    // between debug, safe, fast, and small.
     const optimize = b.standardOptimizeOption(.{});
 
-    // In Debug Release, the default optimization level is set to -O0, which significantly increases the binary size.
+    // In debug Release, the default optimization level is set to -O0, which significantly increases the binary size.
     // We override the optimization level with -Og while keeping the other three optimization modes unchanged.
-    const c_optimize = if (optimize == .Debug) "-Og" else if (optimize == .ReleaseSmall) "-Os" else "-O2";
+    const c_optimize = if (optimize == .debug) "-Og" else if (optimize == .small) "-Os" else "-O2";
 
     const translate_c = b.addTranslateC(.{
         .root_source_file = b.path("src/stm_interface.h"),
@@ -145,8 +145,8 @@ pub fn build(b: *std.Build) void {
     elf.link_gc_sections = true; // -Wl,--gc-sections
 
     // Show section sizes inside binary files
-    const size_prog: ?[]const u8 = b.findProgram(&.{"arm-none-eabi-size"}, &.{}) catch
-        b.findProgram(&.{"llvm-size"}, &.{}) catch null;
+    const size_prog: ?[]const u8 = b.findProgram(.{ .names = &.{"arm-none-eabi-size"} }) orelse
+        b.findProgram(.{ .names = &.{"llvm-size"} }) orelse null;
     if (size_prog) |name| {
         const size_run = b.addSystemCommand(&[_][]const u8{
             name,
